@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Köprü Kur - Oyun Evi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- GERİ DÖN TUŞU -->
+  <a href="../index.html" class="back-button" id="geriDon">
+    <span class="back-icon">🏠</span>
+    <span class="back-text">GERİ DÖN</span>
+  </a>
 
+  <!-- Üst Bilgi Çubuğu -->
+  <div class="top-bar">
+    <div class="game-title">KÖPRÜ KUR</div>
+    <div class="score-display">Skor: <span id="skor">0</span></div>
+    <div class="high-score">Rekor: <span id="rekor">0</span></div>
+    <button class="sound-toggle" id="sesToggle">🔊</button>
+  </div>
+
+  <!-- Oyun Alanı -->
+  <div class="game-container" id="gameContainer">
+    <div class="platform left-platform" id="solPlatform">
+      <div class="platform-top"></div>
+      <div class="platform-side"></div>
+      <div class="character" id="karakter">
+        <div class="char-head"></div>
+        <div class="char-body"></div>
+        <div class="char-legs">
+          <div class="leg left-leg"></div>
+          <div class="leg right-leg"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bridge-container" id="kopruContainer">
+      <div class="bridge" id="kopru"></div>
+    </div>
+
+    <div class="platform right-platform" id="sagPlatform">
+      <div class="platform-top"></div>
+      <div class="platform-side"></div>
+    </div>
+  </div>
+
+  <!-- Talimat -->
+  <div class="instruction" id="talimat">Basılı Tut ve Bırak</div>
+
+  <!-- Mükemmel Yazısı -->
+  <div class="perfect-text" id="mukemmelYazi">MÜKEMMEL!</div>
+
+  <!-- Konfeti Container -->
+  <div class="confetti-container" id="konfeti"></div>
+
+  <!-- Game Over Ekranı -->
+  <div class="game-over" id="gameOver">
+    <div class="game-over-text">OYUN BİTTİ!</div>
+    <div class="final-score">Skor: <span id="finalSkor">0</span></div>
+    <div class="new-record" id="yeniRekor">YENİ REKOR! 🎉</div>
+    <button class="restart-btn" id="yenidenBasla">Tekrar Oyna</button>
+    <a href="../index.html" class="menu-btn">Ana Menü</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
