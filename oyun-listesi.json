@@ -10,5 +10,11 @@
         "ad": "Block Blast",
         "ikon": "oyunlar/blockblast/ikon.png",
         "baglanti": "oyunlar/blockblast/index.html"
+    },
+    {
+    "id": "kopru-kur",
+    "ad": "Köprü Kur",
+    "ikon": "oyunlar/kopru-kur/ikon.png",
+    "baglanti": "oyunlar/kopru-kur/index.html"
     }
 ]
