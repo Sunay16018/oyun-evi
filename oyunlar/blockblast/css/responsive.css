@@ -1,69 +1,41 @@
 @media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: repeat(8, 45px);
-    grid-template-rows: repeat(8, 45px);
-  }
-  .cell {
-    width: 45px;
-    height: 45px;
-  }
-  .left-panel, .right-panel {
-    width: 140px;
-  }
+  :root { --cell-size: 45px; --mini-size: 16px; }
+  .left-panel, .right-panel { width: 140px; }
+}
+
+@media (max-width: 900px) {
+  :root { --cell-size: 42px; --mini-size: 16px; }
+  .left-panel, .right-panel { width: 120px; }
+  .game-header h1 { font-size: 1.2rem; }
+  .score-value, .stat-value { font-size: 1.2rem; }
 }
 
 @media (max-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(8, 40px);
-    grid-template-rows: repeat(8, 40px);
-  }
-  .cell {
-    width: 40px;
-    height: 40px;
-  }
-  .left-panel, .right-panel {
-    width: 120px;
-  }
-  .game-header h1 {
-    font-size: 1.2rem;
-  }
-  .score-value {
-    font-size: 1.2rem;
-  }
-  .bottom-bar {
-    flex-direction: column;
-    gap: 8px;
-  }
+  :root { --cell-size: 40px; --mini-size: 14px; }
+  .left-panel, .right-panel { width: 100px; }
+  .bottom-bar { flex-direction: column; gap: 8px; }
+}
+
+@media (max-width: 600px) {
+  :root { --cell-size: 36px; --mini-size: 14px; }
+  .game-layout { flex-direction: column; align-items: center; gap: 6px; padding: 4px; }
+  .left-panel { flex-direction: row; justify-content: center; gap: 6px; width: 100%; min-width: unset; }
+  .right-panel { width: 100%; min-width: unset; }
+  .next-blocks { flex-direction: row; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .score-card, .stat-card { padding: 6px 10px; min-width: 70px; }
+  .game-header { padding: 6px 12px; }
+  .game-header h1 { font-size: 1rem; }
+  .bottom-bar { padding: 6px; }
+  .game-btn { padding: 6px 10px; font-size: 0.75rem; }
+  .modal-box { padding: 20px; width: 280px; }
+  .side-panel { width: 100%; right: -100%; }
 }
 
 @media (max-width: 480px) {
-  .grid {
-    grid-template-columns: repeat(8, 35px);
-    grid-template-rows: repeat(8, 35px);
-    gap: 1px;
-    padding: 4px;
-  }
-  .cell {
-    width: 35px;
-    height: 35px;
-  }
-  .game-layout {
-    flex-direction: column;
-  }
-  .left-panel, .right-panel {
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-around;
-  }
-  .score-card {
-    padding: 8px;
-    min-width: 80px;
-  }
-  .game-header h1 {
-    font-size: 1rem;
-  }
-  .block-preview .mini-block {
-    width: 16px;
-    height: 16px;
-  }
+  :root { --cell-size: 35px; --mini-size: 12px; }
+  .grid-container { padding: 4px; }
+}
+
+@media (max-width: 380px) {
+  :root { --cell-size: 32px; --mini-size: 12px; }
 }
