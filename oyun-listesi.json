@@ -4,5 +4,11 @@
         "ad": "Zorlabireni",
         "ikon": "oyunlar/zorlabireni/ikon.png",
         "baglanti": "oyunlar/zorlabireni/index.html"
+    },
+    {
+        "id": "blokblasy",
+        "ad": "Block Blast",
+        "ikon": "oyunlar/blockblast/ikon.png",
+        "baglanti": "oyunlar/blockblast/index.html"
     }
 ]
