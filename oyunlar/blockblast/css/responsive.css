@@ -1,0 +1,69 @@
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(8, 45px);
+    grid-template-rows: repeat(8, 45px);
+  }
+  .cell {
+    width: 45px;
+    height: 45px;
+  }
+  .left-panel, .right-panel {
+    width: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(8, 40px);
+    grid-template-rows: repeat(8, 40px);
+  }
+  .cell {
+    width: 40px;
+    height: 40px;
+  }
+  .left-panel, .right-panel {
+    width: 120px;
+  }
+  .game-header h1 {
+    font-size: 1.2rem;
+  }
+  .score-value {
+    font-size: 1.2rem;
+  }
+  .bottom-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(8, 35px);
+    grid-template-rows: repeat(8, 35px);
+    gap: 1px;
+    padding: 4px;
+  }
+  .cell {
+    width: 35px;
+    height: 35px;
+  }
+  .game-layout {
+    flex-direction: column;
+  }
+  .left-panel, .right-panel {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .score-card {
+    padding: 8px;
+    min-width: 80px;
+  }
+  .game-header h1 {
+    font-size: 1rem;
+  }
+  .block-preview .mini-block {
+    width: 16px;
+    height: 16px;
+  }
+}

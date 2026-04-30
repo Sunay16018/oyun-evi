@@ -1,1 +1,54 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  grid-template-rows: repeat(8, 50px);
+  gap: 2px;
+  background: var(--grid-bg);
+  padding: 8px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
 
+.cell {
+  width: 50px;
+  height: 50px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  border: 1px solid var(--grid-line);
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.cell:hover {
+  border-color: var(--grid-line-hover);
+  background: rgba(255,255,255,0.08);
+}
+
+.cell.highlight-valid {
+  background: rgba(46, 213, 115, 0.3);
+  border-color: var(--success);
+  box-shadow: 0 0 10px rgba(46, 213, 115, 0.4);
+}
+
+.cell.highlight-invalid {
+  background: rgba(255, 71, 87, 0.3);
+  border-color: var(--danger);
+  animation: shake 0.3s ease;
+}
+
+.cell.matched {
+  animation: matchedPulse 0.3s ease infinite alternate;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+@keyframes matchedPulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.1); opacity: 0.8; }
+}
