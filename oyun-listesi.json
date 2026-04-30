@@ -1,0 +1,8 @@
+[
+    {
+        "id": "zorlabireni",
+        "ad": "Zorlabireni",
+        "ikon": "oyunlar/zorlabireni/ikon.png",
+        "baglanti": "oyunlar/zorlabireni/index.html"
+    }
+]
