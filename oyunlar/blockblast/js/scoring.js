@@ -17,22 +17,14 @@ const Scoring = {
     const totalCleared = clearedCells.length;
     let multiplier = this.comboMultiplier;
 
-    // Line clear bonuses
     const totalLines = lines.rows.length + lines.cols.length;
-    if (totalLines >= 2) {
-      multiplier *= 1.5;
-    }
-    if (totalLines >= 3) {
-      multiplier *= 2.0;
-    }
-    if (totalLines >= 4) {
-      multiplier *= 3.0;
-    }
+    if (totalLines >= 2) multiplier *= 1.5;
+    if (totalLines >= 3) multiplier *= 2.0;
+    if (totalLines >= 4) multiplier *= 3.0;
 
     const points = Math.floor(blockScore * totalCleared * multiplier);
     this.baseScore += points;
 
-    // Update level
     this.level = Math.floor(this.baseScore / 500) + 1;
 
     return { points, multiplier, totalCleared };

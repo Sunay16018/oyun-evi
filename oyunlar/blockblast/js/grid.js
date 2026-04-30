@@ -3,9 +3,7 @@ const Grid = {
   cells: [],
 
   init() {
-    this.cells = Array(this.size).fill(null).map(() => 
-      Array(this.size).fill(null)
-    );
+    this.cells = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
   },
 
   canPlace(block, gridX, gridY) {
@@ -16,13 +14,8 @@ const Grid = {
           const targetX = gridX + x;
           const targetY = gridY + y;
 
-          if (targetX < 0 || targetX >= this.size || targetY < 0 || targetY >= this.size) {
-            return false;
-          }
-
-          if (this.cells[targetY][targetX] !== null) {
-            return false;
-          }
+          if (targetX < 0 || targetX >= this.size || targetY < 0 || targetY >= this.size) return false;
+          if (this.cells[targetY][targetX] !== null) return false;
         }
       }
     }
@@ -38,11 +31,7 @@ const Grid = {
         if (shape[y][x]) {
           const targetX = gridX + x;
           const targetY = gridY + y;
-          this.cells[targetY][targetX] = {
-            ...block,
-            gridX: targetX,
-            gridY: targetY
-          };
+          this.cells[targetY][targetX] = { ...block, gridX: targetX, gridY: targetY };
           placedCells.push({ x: targetX, y: targetY });
         }
       }
@@ -55,18 +44,12 @@ const Grid = {
     const rowsToClear = [];
     const colsToClear = [];
 
-    // Check rows
     for (let y = 0; y < this.size; y++) {
-      if (this.cells[y].every(cell => cell !== null)) {
-        rowsToClear.push(y);
-      }
+      if (this.cells[y].every(cell => cell !== null)) rowsToClear.push(y);
     }
 
-    // Check columns
     for (let x = 0; x < this.size; x++) {
-      if (this.cells.every(row => row[x] !== null)) {
-        colsToClear.push(x);
-      }
+      if (this.cells.every(row => row[x] !== null)) colsToClear.push(x);
     }
 
     return { rows: rowsToClear, cols: colsToClear };
@@ -75,7 +58,6 @@ const Grid = {
   clearLines(lines) {
     const clearedCells = [];
 
-    // Clear rows
     lines.rows.forEach(row => {
       for (let x = 0; x < this.size; x++) {
         if (this.cells[row][x] !== null) {
@@ -85,11 +67,9 @@ const Grid = {
       }
     });
 
-    // Clear columns
     lines.cols.forEach(col => {
       for (let y = 0; y < this.size; y++) {
         if (this.cells[y][col] !== null) {
-          // Avoid duplicates
           const exists = clearedCells.some(c => c.x === col && c.y === y);
           if (!exists) {
             clearedCells.push({ x: col, y, block: this.cells[y][col] });
@@ -128,9 +108,7 @@ const Grid = {
     for (const block of blocks) {
       for (let y = 0; y < this.size; y++) {
         for (let x = 0; x < this.size; x++) {
-          if (this.canPlace(block, x, y)) {
-            return true;
-          }
+          if (this.canPlace(block, x, y)) return true;
         }
       }
     }

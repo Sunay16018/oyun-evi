@@ -1,5 +1,4 @@
 const Game = {
-  grid: null,
   availableBlocks: [],
   score: 0,
   highScore: 0,
@@ -27,8 +26,8 @@ const Game = {
     Scoring.reset();
 
     this.generateBlocks();
-    Renderer.updateGrid(Grid.cells);
-    Renderer.updateScore(this.score, this.highScore, 1, 1);
+    Renderer.updateGrid();
+    Renderer.updateScore(0, this.highScore, 1, 1);
 
     document.getElementById('game-over-modal').classList.add('hidden');
     document.getElementById('pause-modal').classList.add('hidden');
@@ -47,9 +46,9 @@ const Game = {
 
     if (!Grid.canPlace(block, gridX, gridY)) return;
 
-    // Place block
-    const placedCells = Grid.placeBlock(block, gridX, gridY);
-    Renderer.updateGrid(Grid.cells);
+    // Place block and immediately render
+    Grid.placeBlock(block, gridX, gridY);
+    Renderer.updateGrid();
 
     // Remove from available
     this.availableBlocks.splice(blockIndex, 1);
@@ -78,23 +77,24 @@ const Game = {
       return;
     }
 
-    // Show matched animation
+    // Mark matched cells
     const allMatched = [];
     lines.rows.forEach(row => {
       for (let x = 0; x < 8; x++) allMatched.push({ x, y: row });
     });
     lines.cols.forEach(col => {
       for (let y = 0; y < 8; y++) {
-        if (!allMatched.some(p => p.x === col && p.y === y)) {
+        if (!allMatched.some(m => m.x === col && m.y === y)) {
           allMatched.push({ x: col, y });
         }
       }
     });
 
+    // Animate clearing
     Renderer.animateClear(allMatched);
 
     setTimeout(() => {
-      // Calculate score
+      // Clear lines and calculate score
       const clearedCells = Grid.clearLines(lines);
       const scoreResult = Scoring.addScore(10, clearedCells, lines);
       this.score = Scoring.baseScore;
@@ -119,18 +119,19 @@ const Game = {
       // Particles
       Particles.createComboExplosion(lines);
 
-      // Apply gravity
+      // Apply gravity and re-render
       setTimeout(() => {
-        const moved = Grid.applyGravity();
-        Renderer.updateGrid(Grid.cells);
+        Grid.applyGravity();
+        Renderer.updateGrid();
 
-        // Check for chain reactions
+        // Check chain reactions
         setTimeout(() => {
           const newLines = Grid.checkLines();
           if (newLines.rows.length > 0 || newLines.cols.length > 0) {
             this.processLines();
           }
         }, 300);
+
       }, 400);
 
     }, 300);
@@ -168,21 +169,34 @@ const Game = {
   },
 
   setupUI() {
-    document.getElementById('btn-pause').addEventListener('click', () => this.pause());
-    document.getElementById('btn-resume').addEventListener('click', () => this.resume());
-    document.getElementById('btn-restart').addEventListener('click', () => this.reset());
-    document.getElementById('btn-restart-pause').addEventListener('click', () => {
-      this.resume();
-      this.reset();
-    });
-    document.getElementById('btn-replay').addEventListener('click', () => this.reset());
-    document.getElementById('btn-main-menu').addEventListener('click', () => this.reset());
-    document.getElementById('btn-quit').addEventListener('click', () => this.reset());
-    document.getElementById('btn-menu').addEventListener('click', () => this.reset());
+    // Buttons already have onclick in HTML
   }
 };
 
-// Start game when DOM is ready
+// UI Toggles
+function toggleSettings() {
+  document.getElementById('settings-panel').classList.toggle('open');
+  document.getElementById('leaderboard-panel').classList.remove('open');
+}
+
+function toggleLeaderboard() {
+  document.getElementById('leaderboard-panel').classList.toggle('open');
+  document.getElementById('settings-panel').classList.remove('open');
+}
+
+function toggleSetting(el) {
+  el.classList.toggle('active');
+}
+
+// Close panels on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.side-panel') && !e.target.closest('.icon-btn')) {
+    document.getElementById('settings-panel').classList.remove('open');
+    document.getElementById('leaderboard-panel').classList.remove('open');
+  }
+});
+
+// Start game
 document.addEventListener('DOMContentLoaded', () => {
   Game.init();
 });

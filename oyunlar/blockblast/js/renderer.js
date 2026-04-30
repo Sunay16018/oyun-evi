@@ -21,21 +21,19 @@ const Renderer = {
     }
   },
 
-  updateGrid(gridCells) {
+  updateGrid() {
     const cells = this.gridElement.querySelectorAll('.cell');
     cells.forEach(cell => {
       const x = parseInt(cell.dataset.x);
       const y = parseInt(cell.dataset.y);
-      const block = gridCells[y][x];
+      const block = Grid.cells[y][x];
 
       cell.innerHTML = '';
       cell.className = 'cell';
 
       if (block) {
         const blockDiv = document.createElement('div');
-        blockDiv.className = `block ${block.class} block-placed`;
-        blockDiv.style.width = '100%';
-        blockDiv.style.height = '100%';
+        blockDiv.className = `block-placed ${block.class}`;
         cell.appendChild(blockDiv);
       }
     });
@@ -52,8 +50,8 @@ const Renderer = {
 
       const shape = block.shape;
       preview.style.display = 'grid';
-      preview.style.gridTemplateColumns = `repeat(${shape[0].length}, 20px)`;
-      preview.style.gridTemplateRows = `repeat(${shape.length}, 20px)`;
+      preview.style.gridTemplateColumns = `repeat(${shape[0].length}, var(--mini-size))`;
+      preview.style.gridTemplateRows = `repeat(${shape.length}, var(--mini-size))`;
 
       for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
@@ -94,7 +92,7 @@ const Renderer = {
     clearedCells.forEach(({ x, y }) => {
       const cell = this.gridElement.querySelector(`[data-x="${x}"][data-y="${y}"]`);
       if (cell) {
-        const block = cell.querySelector('.block');
+        const block = cell.querySelector('.block-placed');
         if (block) {
           block.classList.add('block-clearing');
         }
@@ -105,7 +103,7 @@ const Renderer = {
   showComboText(text, type = 'normal') {
     const comboEl = document.getElementById('combo-text');
     comboEl.textContent = text;
-    comboEl.className = 'combo-text animate';
+    comboEl.className = 'combo-text show';
 
     if (type === 'mega') {
       comboEl.style.color = '#ff4757';
@@ -146,5 +144,6 @@ const Renderer = {
     document.getElementById('high-score').textContent = highScore.toLocaleString();
     document.getElementById('combo').textContent = `x${combo}`;
     document.getElementById('level').textContent = `${level} ${'⭐'.repeat(Math.min(level, 3))}`;
+    document.getElementById('lb-score-1').textContent = score.toLocaleString();
   }
 };

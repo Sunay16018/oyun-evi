@@ -6,10 +6,11 @@ const Particles = {
   },
 
   createExplosion(x, y, color, count = 8) {
-    const rect = this.container.getBoundingClientRect();
-    const cellSize = 50;
-    const centerX = x * (cellSize + 2) + cellSize / 2 + 8;
-    const centerY = y * (cellSize + 2) + cellSize / 2 + 8;
+    const cellSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 48;
+    const gap = 2;
+    const offset = 6;
+    const centerX = x * (cellSize + gap) + cellSize / 2 + offset;
+    const centerY = y * (cellSize + gap) + cellSize / 2 + offset;
 
     for (let i = 0; i < count; i++) {
       const particle = document.createElement('div');
@@ -49,9 +50,9 @@ const Particles = {
       }
     });
 
+    const colors = ['#ff4757', '#ff6348', '#ffa502', '#2ed573', '#1e90ff', '#5352ed', '#e84393', '#00d2d3'];
     allPositions.forEach((pos, i) => {
       setTimeout(() => {
-        const colors = ['#ff4757', '#ff6348', '#ffa502', '#2ed573', '#1e90ff', '#5352ed', '#e84393', '#00d2d3'];
         const color = colors[Math.floor(Math.random() * colors.length)];
         this.createExplosion(pos.x, pos.y, color, 6);
       }, i * 30);

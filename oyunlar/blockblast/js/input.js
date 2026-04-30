@@ -1,9 +1,11 @@
 const Input = {
   draggedBlock: null,
+  draggedBlockIndex: null,
   draggedElement: null,
   dragOffset: { x: 0, y: 0 },
-  originalPosition: null,
+  originalElement: null,
   isDragging: false,
+  hoverGridPos: null,
 
   init() {
     this.setupEventListeners();
@@ -18,10 +20,7 @@ const Input = {
     document.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
     document.addEventListener('touchend', this.onTouchEnd.bind(this));
 
-    // Double click to rotate
     document.addEventListener('dblclick', this.onDoubleClick.bind(this));
-
-    // Keyboard
     document.addEventListener('keydown', this.onKeyDown.bind(this));
   },
 
@@ -77,7 +76,6 @@ const Input = {
     this.draggedBlockIndex = index;
     this.isDragging = true;
 
-    // Create floating clone
     const clone = element.cloneNode(true);
     clone.classList.add('dragging');
     clone.style.position = 'fixed';
@@ -102,14 +100,16 @@ const Input = {
     this.draggedElement.style.left = (clientX - this.dragOffset.x) + 'px';
     this.draggedElement.style.top = (clientY - this.dragOffset.y) + 'px';
 
-    // Check grid hover
     const gridRect = Renderer.gridElement.getBoundingClientRect();
+    const cellSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 48;
+    const gap = 2;
+    const pad = 6;
+
     const relativeX = clientX - gridRect.left;
     const relativeY = clientY - gridRect.top;
 
-    const cellSize = 52; // 50px + 2px gap
-    const gridX = Math.floor(relativeX / cellSize);
-    const gridY = Math.floor(relativeY / cellSize);
+    const gridX = Math.floor((relativeX - pad) / (cellSize + gap));
+    const gridY = Math.floor((relativeY - pad) / (cellSize + gap));
 
     if (gridX >= 0 && gridX < 8 && gridY >= 0 && gridY < 8) {
       const positions = this.getBlockPositions(this.draggedBlock, gridX, gridY);
@@ -169,7 +169,6 @@ const Input = {
 
   onKeyDown(e) {
     if (e.key === 'r' || e.key === 'R') {
-      // Rotate selected block if any
       if (Game.selectedBlockIndex !== undefined) {
         Game.rotateBlock(Game.selectedBlockIndex);
       }
