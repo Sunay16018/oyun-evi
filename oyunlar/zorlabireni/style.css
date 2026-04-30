@@ -1,0 +1,387 @@
+/* ============================================
+   ZORLABİRENI - Oyun Sayfası Stilleri
+   ============================================ */
+
+:root {
+    --bg-dark: #0a0a0f;
+    --bg-card: rgba(20, 20, 35, 0.8);
+    --neon-blue: #00d4ff;
+    --neon-pink: #ff00aa;
+    --neon-green: #00ff88;
+    --neon-purple: #b300ff;
+    --neon-yellow: #ffdd00;
+    --text-primary: #e8e8f0;
+    --text-secondary: #a0a0b8;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --wall-color: #1a1a2e;
+    --player-color: #00d4ff;
+    --goal-color: #00ff88;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ============================================
+   ARKA PLAN PARTİKÜLLERİ
+   ============================================ */
+.bg-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--neon-blue);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: particleFloat 10s linear infinite;
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 12s; }
+.particle:nth-child(2) { left: 30%; animation-delay: 2s; animation-duration: 15s; background: var(--neon-pink); }
+.particle:nth-child(3) { left: 50%; animation-delay: 4s; animation-duration: 10s; background: var(--neon-green); }
+.particle:nth-child(4) { left: 70%; animation-delay: 1s; animation-duration: 14s; background: var(--neon-purple); }
+.particle:nth-child(5) { left: 90%; animation-delay: 3s; animation-duration: 11s; background: var(--neon-yellow); }
+
+@keyframes particleFloat {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* ============================================
+   GERİ DÖNÜŞ BUTONU
+   ============================================ */
+.back-bar {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 30px;
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.back-button .arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.back-button:hover .arrow {
+    transform: translateX(-3px);
+}
+
+/* ============================================
+   OYUN BAŞLIĞI
+   ============================================ */
+.game-header {
+    text-align: center;
+    padding: 10px 20px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.game-title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 800;
+    color: var(--neon-blue);
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    margin-bottom: 8px;
+}
+
+.game-desc {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   OYUN ALANI
+   ============================================ */
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px 40px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Oyun çerçevesi */
+.game-frame {
+    position: relative;
+    background: var(--bg-card);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 212, 255, 0.05);
+}
+
+#oyunCanvas {
+    display: block;
+    border-radius: 12px;
+    background: #0d0d1a;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    max-width: 100%;
+    height: auto;
+}
+
+/* Oyun overlay (başlangıç / bitiş ekranı) */
+.game-overlay {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    background: rgba(10, 10, 15, 0.92);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.4s ease;
+}
+
+.game-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.overlay-content {
+    text-align: center;
+    padding: 30px;
+}
+
+.overlay-content h2 {
+    font-size: 1.8rem;
+    color: var(--neon-blue);
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+}
+
+.overlay-content p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-size: 1rem;
+}
+
+.neon-button {
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.neon-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 0 0 60px rgba(179, 0, 255, 0.3);
+}
+
+.neon-button:active {
+    transform: scale(0.98);
+}
+
+/* ============================================
+   OYUN BİLGİLERİ
+   ============================================ */
+.game-info {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.info-box {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 12px 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--neon-green);
+    font-family: 'Courier New', monospace;
+}
+
+/* ============================================
+   MOBİL KONTROLLER (D-Pad)
+   ============================================ */
+.mobile-controls {
+    display: none;
+    margin-top: 10px;
+}
+
+.d-pad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.dpad-middle {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.dpad-btn {
+    width: 55px;
+    height: 55px;
+    border: 2px solid rgba(0, 212, 255, 0.4);
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 12px;
+    color: var(--neon-blue);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.dpad-btn:active {
+    background: rgba(0, 212, 255, 0.3);
+    transform: scale(0.92);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+}
+
+.dpad-center {
+    background: rgba(0, 212, 255, 0.2);
+    font-size: 0.8rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.game-footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    opacity: 0.6;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   DUYARLI TASARIM
+   ============================================ */
+@media (max-width: 650px) {
+    #oyunCanvas {
+        width: 100%;
+        max-width: 350px;
+        height: auto;
+    }
+
+    .game-frame {
+        padding: 10px;
+    }
+
+    .game-overlay {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+    }
+
+    .mobile-controls {
+        display: flex;
+        justify-content: center;
+    }
+
+    .game-info {
+        gap: 10px;
+    }
+
+    .info-box {
+        padding: 10px 18px;
+    }
+}
+
+@media (max-width: 400px) {
+    .back-bar {
+        padding: 15px;
+    }
+
+    .back-button {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+
+    .overlay-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .neon-button {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}

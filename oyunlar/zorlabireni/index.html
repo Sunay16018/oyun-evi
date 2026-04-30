@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zorlabireni - Oyun Evi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Arka plan efektleri -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
 
+    <!-- Geri dönüş butonu -->
+    <div class="back-bar">
+        <a href="../../index.html" class="back-button">
+            <span class="arrow">←</span>
+            <span>Oyun Evine Dön</span>
+        </a>
+    </div>
+
+    <!-- Oyun başlığı -->
+    <header class="game-header">
+        <h1 class="game-title">🧩 Zorlabireni</h1>
+        <p class="game-desc">Yön tuşlarıyla mavi kareyi yeşil bitiş noktasına ulaştır!</p>
+    </header>
+
+    <!-- Oyun alanı -->
+    <main class="game-area">
+        <div class="game-frame">
+            <canvas id="oyunCanvas" width="600" height="600"></canvas>
+
+            <!-- Oyun durumu overlay -->
+            <div id="gameOverlay" class="game-overlay">
+                <div class="overlay-content">
+                    <h2 id="overlayTitle">Başlamaya Hazır mısın?</h2>
+                    <p id="overlayDesc">Yön tuşlarını kullanarak labirenti çöz.</p>
+                    <button id="startBtn" class="neon-button">▶ BAŞLA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oyun bilgileri -->
+        <div class="game-info">
+            <div class="info-box">
+                <span class="info-label">⏱️ Süre:</span>
+                <span id="timer" class="info-value">00:00</span>
+            </div>
+            <div class="info-box">
+                <span class="info-label">🎯 Hamle:</span>
+                <span id="moves" class="info-value">0</span>
+            </div>
+            <div class="info-box">
+                <span class="info-label">🏆 Seviye:</span>
+                <span id="level" class="info-value">1</span>
+            </div>
+        </div>
+
+        <!-- Kontrol butonları (mobil için) -->
+        <div class="mobile-controls">
+            <div class="d-pad">
+                <button class="dpad-btn dpad-up" data-dir="up">▲</button>
+                <div class="dpad-middle">
+                    <button class="dpad-btn dpad-left" data-dir="left">◀</button>
+                    <button class="dpad-btn dpad-center">●</button>
+                    <button class="dpad-btn dpad-right" data-dir="right">▶</button>
+                </div>
+                <button class="dpad-btn dpad-down" data-dir="down">▼</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="game-footer">
+        <p>Oyun Evi &copy; 2026 - Zorlabireni</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
