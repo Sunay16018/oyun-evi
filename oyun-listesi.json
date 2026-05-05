@@ -12,6 +12,12 @@
         "baglanti": "oyunlar/blockblast/index.html"
     },
     {
+        "id": "longcat",
+        "ad": "Uzun Kedi",
+        "ikon": "oyunlar/longcat/ikon.png",
+        "baglanti": "oyunlar/longcat/index.html"
+    },
+    {
     "id": "kopru-kur",
     "ad": "Köprü Kur",
     "ikon": "oyunlar/kopru-kur/ikon.png",
