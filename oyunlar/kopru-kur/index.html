@@ -1,69 +1,850 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Köprü Kur - Oyun Evi</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Köprü Kur</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: #1a1a2e;
+            overflow: hidden;
+            touch-action: manipulation;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 15px;
+        }
+
+        .back-btn {
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        .score-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            gap: 20px;
+        }
+
+        .score-box .val {
+            color: #2ed573;
+        }
+
+        .hint-text {
+            position: fixed;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 16px;
+            font-weight: 500;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .perfect-text {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #2ed573;
+            font-size: 40px;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.3s;
+        }
+
+        .perfect-text.show {
+            opacity: 1;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .game-over-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .game-over-panel.active {
+            display: flex;
+        }
+
+        .game-over-panel h2 {
+            color: #ff4757;
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .game-over-panel .final-score {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .game-over-panel .new-record {
+            color: #ffa502;
+            font-size: 18px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .game-over-panel .new-record.show {
+            display: block;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .game-over-panel button {
+            padding: 14px 40px;
+            margin: 6px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+
+        .game-over-panel button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-restart {
+            background: #2ed573;
+        }
+        .btn-menu {
+            background: #00d2d3;
+        }
+    </style>
 </head>
 <body>
-  <!-- GERİ DÖN TUŞU -->
-  <a href="../index.html" class="back-button" id="geriDon">
-    <span class="back-icon">🏠</span>
-    <span class="back-text">GERİ DÖN</span>
-  </a>
 
-  <!-- Üst Bilgi Çubuğu -->
-  <div class="top-bar">
-    <div class="game-title">KÖPRÜ KUR</div>
-    <div class="score-display">Skor: <span id="skor">0</span></div>
-    <div class="high-score">Rekor: <span id="rekor">0</span></div>
-    <button class="sound-toggle" id="sesToggle">🔊</button>
-  </div>
+    <canvas id="gameCanvas"></canvas>
 
-  <!-- Oyun Alanı -->
-  <div class="game-container" id="gameContainer">
-    <div class="platform left-platform" id="solPlatform">
-      <div class="platform-top"></div>
-      <div class="platform-side"></div>
-      <div class="character" id="karakter">
-        <div class="char-head"></div>
-        <div class="char-body"></div>
-        <div class="char-legs">
-          <div class="leg left-leg"></div>
-          <div class="leg right-leg"></div>
+    <div class="ui-overlay">
+        <div class="top-bar">
+            <button class="back-btn" onclick="goBack()">🏠 GERİ DÖN</button>
+            <div class="score-box">
+                Skor: <span class="val" id="scoreVal">0</span>
+                &nbsp;&nbsp;
+                Rekor: <span class="val" id="bestVal">0</span>
+            </div>
         </div>
-      </div>
+        <div class="hint-text" id="hintText">Basılı tut, bırak!</div>
+        <div class="perfect-text" id="perfectText">MÜKEMMEL!</div>
     </div>
 
-    <div class="bridge-container" id="kopruContainer">
-      <div class="bridge" id="kopru"></div>
+    <div class="game-over-panel" id="gameOverPanel">
+        <h2>Oyun Bitti!</h2>
+        <div class="final-score">Skor: <span id="finalScore">0</span></div>
+        <div class="new-record" id="newRecord">🎉 YENİ REKOR!</div>
+        <button class="btn-restart" onclick="restartGame()">Tekrar Oyna</button>
+        <button class="btn-menu" onclick="goBack()">Ana Menü</button>
     </div>
 
-    <div class="platform right-platform" id="sagPlatform">
-      <div class="platform-top"></div>
-      <div class="platform-side"></div>
-    </div>
-  </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-  <!-- Talimat -->
-  <div class="instruction" id="talimat">Basılı Tut ve Bırak</div>
+        let W, H;
+        let score = 0;
+        let bestScore = 0;
+        let gameState = 'idle';
+        let isHolding = false;
+        let buildTimer = 0;
+        let bridgeLength = 0;
 
-  <!-- Mükemmel Yazısı -->
-  <div class="perfect-text" id="mukemmelYazi">MÜKEMMEL!</div>
+        let platLeft, platRight;
+        let character = {
+            x: 0,
+            y: 0,
+            vy: 0,
+            walkPhase: 0,
+            isWalking: false
+        };
 
-  <!-- Konfeti Container -->
-  <div class="confetti-container" id="konfeti"></div>
+        let debris = [];
+        let confetti = [];
 
-  <!-- Game Over Ekranı -->
-  <div class="game-over" id="gameOver">
-    <div class="game-over-text">OYUN BİTTİ!</div>
-    <div class="final-score">Skor: <span id="finalSkor">0</span></div>
-    <div class="new-record" id="yeniRekor">YENİ REKOR! 🎉</div>
-    <button class="restart-btn" id="yenidenBasla">Tekrar Oyna</button>
-    <a href="../index.html" class="menu-btn">Ana Menü</a>
-  </div>
+        // === KAMERA & ZOOM ===
+        let cameraX = 0;
+        let targetCameraX = 0;
+        let zoom = 1;
+        let targetZoom = 1;
 
-  <script src="script.js"></script>
+        const GROUND_Y_PERCENT = 0.70;
+        const MIN_GAP = 180; // Minimum boşluk (arttırıldı)
+        const MAX_GAP = 380; // Maksimum boşluk (arttırıldı)
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(random(min, max + 1));
+        }
+
+        function loadBest() {
+            const saved = localStorage.getItem('bridgeBest');
+            if (saved) bestScore = parseInt(saved);
+            document.getElementById('bestVal').textContent = bestScore;
+        }
+
+        function saveBest() {
+            if (score > bestScore) {
+                bestScore = score;
+                localStorage.setItem('bridgeBest', bestScore);
+                document.getElementById('bestVal').textContent = bestScore;
+                return true;
+            }
+            return false;
+        }
+
+        function resizeCanvas() {
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = W;
+            canvas.height = H;
+        }
+
+        function getGroundY() {
+            return Math.floor(H * GROUND_Y_PERCENT);
+        }
+
+        // Zoom hesapla - iki platform ekrana sığacak şekilde
+        function calculateZoom(leftPlat, rightPlat) {
+            const totalWidth = (rightPlat.x + rightPlat.w) - leftPlat.x + 80; // padding
+            const idealZoom = W / totalWidth;
+            // Zoom sınırları: 0.6x - 1.3x
+            return Math.max(0.55, Math.min(1.3, idealZoom));
+        }
+
+        function createPlatforms() {
+            const groundY = getGroundY();
+
+            const w1 = randomInt(90, 150);
+            const h1 = randomInt(65, 105);
+            const w2 = randomInt(90, 150);
+            const h2 = randomInt(65, 105);
+
+            const gap = randomInt(MIN_GAP, MAX_GAP);
+
+            const x1 = 50;
+            const x2 = x1 + w1 + gap;
+
+            platLeft = { x: x1, y: groundY, w: w1, h: h1 };
+            platRight = { x: x2, y: groundY, w: w2, h: h2 };
+
+            character.x = platLeft.x + platLeft.w / 2;
+            character.y = platLeft.y;
+            character.vy = 0;
+            character.walkPhase = 0;
+            character.isWalking = false;
+
+            // Zoom hesapla
+            targetZoom = calculateZoom(platLeft, platRight);
+            zoom = targetZoom;
+
+            // Kamera başlangıç - iki platformu ortala
+            const midPoint = (platLeft.x + platRight.x + platRight.w) / 2;
+            targetCameraX = midPoint - W / (2 * zoom);
+            cameraX = targetCameraX;
+        }
+
+        function initGame() {
+            score = 0;
+            gameState = 'idle';
+            isHolding = false;
+            bridgeLength = 0;
+            debris = [];
+            confetti = [];
+            zoom = 1;
+            targetZoom = 1;
+            cameraX = 0;
+            targetCameraX = 0;
+
+            document.getElementById('scoreVal').textContent = '0';
+            document.getElementById('gameOverPanel').classList.remove('active');
+            document.getElementById('hintText').style.display = 'block';
+            document.getElementById('perfectText').classList.remove('show');
+
+            createPlatforms();
+        }
+
+        function nextLevel() {
+            score++;
+            document.getElementById('scoreVal').textContent = score;
+
+            // Sağ platform -> sol platform
+            platLeft = {
+                x: platRight.x,
+                y: platRight.y,
+                w: platRight.w,
+                h: platRight.h
+            };
+
+            // Yeni sağ platform
+            const newW = randomInt(85, 155);
+            const newH = randomInt(65, 105);
+
+            // Boşluk - skorla artsın
+            const difficultyBonus = Math.min(score * 5, 150);
+            const gap = randomInt(
+                MIN_GAP + difficultyBonus,
+                Math.min(MAX_GAP + difficultyBonus, 500)
+            );
+
+            // Yükseklik değişimi
+            const heightChange = random(-60, 60) * Math.min(1, score * 0.06);
+            const newY = Math.max(H * 0.45, Math.min(H * 0.80, getGroundY() + heightChange));
+
+            const newX = platLeft.x + platLeft.w + gap;
+
+            platRight = { x: newX, y: newY, w: newW, h: newH };
+
+            character.x = platLeft.x + platLeft.w / 2;
+            character.y = platLeft.y;
+            character.vy = 0;
+            character.walkPhase = 0;
+            character.isWalking = false;
+
+            bridgeLength = 0;
+            gameState = 'idle';
+
+            // Yeni zoom hesapla
+            targetZoom = calculateZoom(platLeft, platRight);
+
+            // Kamera - iki platformu ortala
+            const midPoint = (platLeft.x + platRight.x + platRight.w) / 2;
+            targetCameraX = midPoint - W / (2 * targetZoom);
+
+            document.getElementById('hintText').style.display = 'block';
+        }
+
+        // ============================================
+        // ÇİZİM (ZOOM + KAMERA)
+        // ============================================
+
+        function applyTransform() {
+            ctx.save();
+            // Zoom merkezi: ekranın ortası
+            ctx.translate(W / 2, H / 2);
+            ctx.scale(zoom, zoom);
+            ctx.translate(-W / 2 - cameraX, 0);
+        }
+
+        function restoreTransform() {
+            ctx.restore();
+        }
+
+        function drawBackground() {
+            // Arka plan zoom'dan etkilenmez
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, '#0a0a1e');
+            grad.addColorStop(0.5, '#141e3a');
+            grad.addColorStop(1, '#1b3050');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            const time = Date.now() / 1000;
+            for (let i = 0; i < 50; i++) {
+                const sx = (i * 157 + 30) % W;
+                const sy = (i * 113 + 20) % (H * 0.55);
+                const alpha = 0.25 + Math.sin(time * 2.5 + i) * 0.25;
+                ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                ctx.beginPath();
+                ctx.arc(sx, sy, random(1, 2.5), 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawPlatform(p) {
+            const x = p.x;
+            const y = p.y;
+            const w = p.w;
+            const h = p.h;
+
+            const grad = ctx.createLinearGradient(0, y, 0, y + h);
+            grad.addColorStop(0, '#4CAF50');
+            grad.addColorStop(0.3, '#388E3C');
+            grad.addColorStop(1, '#1B5E20');
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, y, w, h);
+
+            ctx.fillStyle = '#66BB6A';
+            ctx.fillRect(x + 2, y + 1, w - 4, 17);
+
+            ctx.fillStyle = '#81C784';
+            for (let i = 5; i < w - 5; i += 9) {
+                ctx.fillRect(x + i, y - 4, 3, 8);
+            }
+
+            ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, w, h);
+        }
+
+        function drawCharacter() {
+            const x = character.x;
+            let y = character.y;
+            const s = Math.min(28, platLeft.w * 0.3);
+
+            if (character.isWalking) {
+                character.walkPhase += 0.2;
+                y += Math.abs(Math.sin(character.walkPhase)) * -5;
+            }
+
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x, character.y + 2, s * 0.32, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            let leg1 = 0,
+                leg2 = 0;
+            if (character.isWalking) {
+                leg1 = Math.sin(character.walkPhase) * 4;
+                leg2 = Math.sin(character.walkPhase + Math.PI) * 4;
+            }
+
+            ctx.fillStyle = '#5D4E37';
+            ctx.fillRect(x - 7 + leg1, y + 4, 6, 16);
+            ctx.fillRect(x + 1 + leg2, y + 4, 6, 16);
+
+            ctx.fillStyle = '#3E2723';
+            ctx.fillRect(x - 8 + leg1, y + 17, 8, 4);
+            ctx.fillRect(x + 0 + leg2, y + 17, 8, 4);
+
+            ctx.fillStyle = '#E53935';
+            ctx.fillRect(x - 9, y - 17, 18, 24);
+
+            ctx.fillStyle = '#3E2723';
+            ctx.fillRect(x - 9, y, 18, 3);
+
+            ctx.fillStyle = '#FFCC80';
+            ctx.fillRect(x - 14, y - 13, 5, 15);
+            ctx.fillRect(x + 9, y - 13, 5, 15);
+
+            ctx.fillStyle = '#FFCC80';
+            ctx.beginPath();
+            ctx.arc(x, y - 23, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#3E2723';
+            ctx.beginPath();
+            ctx.arc(x, y - 27, 10, Math.PI, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(x - 3, y - 24, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + 3, y - 24, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(x - 2, y - 24, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + 4, y - 24, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#c0392b';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.arc(x, y - 18, 4, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+        }
+
+        function drawBridge() {
+            if (bridgeLength <= 0) return;
+
+            const startX = platLeft.x + platLeft.w;
+            const startY = platLeft.y + 3;
+            const thickness = Math.max(6, Math.min(platLeft.w, platRight.w) * 0.1);
+
+            ctx.fillStyle = '#5D4037';
+            ctx.fillRect(startX - 3, startY - 30, 6, 30);
+
+            if (gameState === 'building') {
+                ctx.fillStyle = '#8D6E63';
+                ctx.fillRect(startX - thickness / 2, startY - bridgeLength, thickness, bridgeLength);
+            } else {
+                ctx.fillStyle = '#8D6E63';
+                ctx.fillRect(startX, startY - thickness / 2, bridgeLength, thickness);
+
+                ctx.fillStyle = '#6D4C41';
+                for (let i = 5; i < bridgeLength - 3; i += 12) {
+                    ctx.fillRect(startX + i, startY - thickness / 2, 3, thickness);
+                }
+            }
+        }
+
+        function drawDebris() {
+            debris = debris.filter(d => {
+                d.x += d.vx;
+                d.y += d.vy;
+                d.vy += 0.3;
+                d.life -= 0.03;
+                if (d.life <= 0) return false;
+                ctx.globalAlpha = d.life;
+                ctx.fillStyle = d.color;
+                ctx.fillRect(d.x, d.y, d.size, d.size);
+                ctx.globalAlpha = 1;
+                return true;
+            });
+        }
+
+        function drawConfetti() {
+            // Konfeti ekran koordinatında kalmalı
+            restoreTransform();
+            confetti = confetti.filter(c => {
+                c.x += c.vx;
+                c.y += c.vy;
+                c.vy += 0.08;
+                c.rot += c.rv;
+                c.life -= 0.006;
+                if (c.life <= 0) return false;
+                ctx.save();
+                ctx.globalAlpha = c.life;
+                ctx.translate(c.x, c.y);
+                ctx.rotate(c.rot);
+                ctx.fillStyle = c.color;
+                ctx.fillRect(-c.s / 2, -c.s / 3, c.s, c.s / 2);
+                ctx.restore();
+                return true;
+            });
+            applyTransform();
+        }
+
+        function spawnDebris(x, y) {
+            const colors = ['#8D6E63', '#6D4C41', '#5D4037', '#A1887F'];
+            for (let i = 0; i < 20; i++) {
+                debris.push({
+                    x,
+                    y,
+                    vx: random(-5, 5),
+                    vy: random(-9, -2),
+                    life: 1,
+                    color: colors[randomInt(0, colors.length - 1)],
+                    size: random(2, 5)
+                });
+            }
+        }
+
+        function spawnConfetti() {
+            const colors = ['#FFD700', '#FF5252', '#2ed573', '#448AFF', '#FF9800', '#E040FB'];
+            for (let i = 0; i < 60; i++) {
+                confetti.push({
+                    x: random(W * 0.1, W * 0.9),
+                    y: random(-50, H * 0.2),
+                    vx: random(-3, 3),
+                    vy: random(1, 5),
+                    life: 1,
+                    color: colors[randomInt(0, colors.length - 1)],
+                    s: random(5, 12),
+                    rot: random(0, Math.PI * 2),
+                    rv: random(-0.12, 0.12)
+                });
+            }
+        }
+
+        // ============================================
+        // GÜNCELLEME
+        // ============================================
+
+        function update() {
+            // Zoom yumuşak geçiş
+            zoom += (targetZoom - zoom) * 0.08;
+
+            // Kamera yumuşak takip
+            cameraX += (targetCameraX - cameraX) * 0.1;
+
+            // Köprü büyütme
+            if (gameState === 'building' && isHolding) {
+                const elapsed = (Date.now() - buildTimer) / 1000;
+                bridgeLength = elapsed * Math.min(450, H * 0.75);
+            }
+
+            // Yürüme
+            if (gameState === 'walking') {
+                const targetX = platRight.x + platRight.w / 2;
+                const speed = 4;
+
+                character.x += speed;
+                character.isWalking = true;
+
+                // Kamera karakteri takip etsin
+                targetCameraX = character.x - W / (2 * zoom);
+
+                const bridgeEndX = platLeft.x + platLeft.w + bridgeLength;
+                if (character.x > bridgeEndX) {
+                    const progress = Math.min(1, (character.x - bridgeEndX) / (platRight.x - bridgeEndX));
+                    character.y = platLeft.y + (platRight.y - platLeft.y) * progress;
+                }
+
+                if (character.x >= targetX) {
+                    character.x = targetX;
+                    character.y = platRight.y;
+                    character.isWalking = false;
+                    nextLevel();
+                }
+            }
+
+            // Düşme
+            if (gameState === 'falling') {
+                character.vy += 0.5;
+                character.y += character.vy;
+                character.x += 1.5;
+
+                targetCameraX = character.x - W / (2 * zoom);
+
+                if (character.y > H + 100) {
+                    gameState = 'over';
+                    endGame();
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            drawBackground();
+
+            applyTransform();
+
+            if (platLeft) drawPlatform(platLeft);
+            if (platRight) drawPlatform(platRight);
+            drawBridge();
+            drawCharacter();
+            drawDebris();
+            drawConfetti();
+
+            restoreTransform();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ============================================
+        // KONTROLLER
+        // ============================================
+
+        function startBuilding() {
+            if (gameState !== 'idle') return;
+            gameState = 'building';
+            isHolding = true;
+            buildTimer = Date.now();
+            bridgeLength = 0;
+            document.getElementById('hintText').style.display = 'none';
+        }
+
+        function stopBuilding() {
+            if (gameState !== 'building' || !isHolding) return;
+            isHolding = false;
+
+            const gapStart = platLeft.x + platLeft.w;
+            const gap = platRight.x - gapStart;
+            const tolerance = platRight.w * 0.18;
+
+            if (bridgeLength < gap - tolerance) {
+                gameState = 'falling';
+                character.vy = -3;
+                character.x = gapStart + bridgeLength;
+                spawnDebris(character.x, character.y);
+            } else if (bridgeLength > gap + platRight.w + tolerance) {
+                gameState = 'falling';
+                character.vy = -2;
+                character.x = gapStart + bridgeLength;
+                spawnDebris(character.x, character.y);
+            } else {
+                const perfectTarget = gap + platRight.w / 2;
+                const isPerfect = Math.abs(bridgeLength - perfectTarget) < platRight.w * 0.1;
+
+                gameState = 'walking';
+                character.isWalking = true;
+                character.walkPhase = 0;
+                character.x = gapStart;
+
+                if (isPerfect) {
+                    document.getElementById('perfectText').classList.add('show');
+                    spawnConfetti();
+                    setTimeout(() => {
+                        document.getElementById('perfectText').classList.remove('show');
+                    }, 750);
+                }
+            }
+        }
+
+        function endGame() {
+            document.getElementById('finalScore').textContent = score;
+            const isNew = saveBest();
+            document.getElementById('newRecord').classList.toggle('show', isNew);
+            document.getElementById('gameOverPanel').classList.add('active');
+            document.getElementById('hintText').style.display = 'none';
+        }
+
+        function restartGame() {
+            initGame();
+            resizeCanvas();
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+
+        canvas.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            startBuilding();
+        });
+
+        canvas.addEventListener('mouseup', function(e) {
+            e.preventDefault();
+            stopBuilding();
+        });
+
+        canvas.addEventListener('mouseleave', function() {
+            if (isHolding) stopBuilding();
+        });
+
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            startBuilding();
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            stopBuilding();
+        }, { passive: false });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' || e.code === 'KeyW') {
+                e.preventDefault();
+                startBuilding();
+            }
+        });
+
+        document.addEventListener('keyup', function(e) {
+            if (e.code === 'Space' || e.code === 'KeyW') {
+                e.preventDefault();
+                stopBuilding();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            resizeCanvas();
+            if (platLeft && platRight) {
+                targetZoom = calculateZoom(platLeft, platRight);
+            }
+        });
+
+        // ============================================
+        // BAŞLAT
+        // ============================================
+
+        loadBest();
+        resizeCanvas();
+        initGame();
+        gameLoop();
+
+        console.log('✅ Köprü Kur - ZOOM + KAMERA - Hazır!');
+        console.log('🔍 Zoom:', zoom);
+        console.log('📏 Min boşluk:', MIN_GAP, 'Max boşluk:', MAX_GAP);
+    </script>
+
 </body>
 </html>
