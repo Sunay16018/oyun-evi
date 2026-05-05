@@ -76,44 +76,13 @@ body {
 /* ============================================
    GERİ DÖNÜŞ BUTONU
    ============================================ */
-.back-bar {
-    width: 100%;
-    max-width: 800px;
-    padding: 20px 30px;
-    position: relative;
-    z-index: 1;
-}
-
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 30px;
-    color: var(--neon-blue);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.back-button:hover {
-    background: rgba(0, 212, 255, 0.2);
-    border-color: var(--neon-blue);
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-    transform: translateX(-5px);
-}
-
-.back-button .arrow {
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
-}
-
-.back-button:hover .arrow {
-    transform: translateX(-3px);
-}
+.back-btn:active { transform:scale(0.93); }
+        .toast {
+            position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+            font-size:38px; font-weight:900; pointer-events:none;
+            z-index:15; opacity:0; text-shadow:0 0 30px rgba(0,0,0,0.5);
+            transition:all 0.3s;
+        }
 
 /* ============================================
    OYUN BAŞLIĞI
