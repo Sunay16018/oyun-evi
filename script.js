@@ -1,12 +1,13 @@
 /* ============================================
    OYUN EVİ - Ana Sayfa JavaScript
-   Dinamik Oyun Kartları Yükleme Sistemi
+   Dinamik Oyun Kartları + Otomatik Geri Dön Butonu
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('oyun-kartlari')) {
         oyunlariYukle();
     }
+    geriDonButonuEkle();
 });
 
 async function oyunlariYukle() {
@@ -16,7 +17,7 @@ async function oyunlariYukle() {
     kartlarAlani.innerHTML = '<div class="loading-text">🎮 Oyunlar yükleniyor...</div>';
 
     try {
-        const response = await fetch('oyun-listesi.json');
+        const response = await fetch('/oyun-listesi.json');
         if (!response.ok) throw new Error(`HTTP Hatası: ${response.status}`);
 
         const oyunlar = await response.json();
@@ -89,6 +90,46 @@ function varsayilanIkonOlustur(oyunAdi) {
     const ilkHarf = oyunAdi.charAt(0).toUpperCase();
 
     return `<div class="default-icon" style="background: ${arkaPlanRengi};"><span style="color: #fff; font-weight: 900;">${ilkHarf}</span></div>`;
+}
+
+function geriDonButonuEkle() {
+    if (document.getElementById('oyun-kartlari')) return;
+    if (document.getElementById('oyun-evi-geri-don')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'oyun-evi-geri-don';
+    btn.innerHTML = '←';
+    btn.title = 'Ana Sayfaya Dön';
+    btn.onclick = function() {
+        window.location.href = '/';
+    };
+
+    btn.style.cssText = `
+        position:fixed;top:10px;left:10px;z-index:99999;
+        width:36px;height:36px;border-radius:50%;
+        background:rgba(10,10,15,.8);
+        border:1.5px solid #00d4ff;color:#00d4ff;
+        font-size:18px;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 0 12px rgba(0,212,255,.3);
+        transition:all .3s ease;outline:none;padding:0;line-height:1;
+    `;
+
+    btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.15)';
+        this.style.borderColor = '#ff00aa';
+        this.style.color = '#ff00aa';
+        this.style.boxShadow = '0 0 20px rgba(255,0,170,.6)';
+    });
+
+    btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+        this.style.borderColor = '#00d4ff';
+        this.style.color = '#00d4ff';
+        this.style.boxShadow = '0 0 12px rgba(0,212,255,.3)';
+    });
+
+    document.body.prepend(btn);
 }
 
 const styleSheet = document.createElement('style');
