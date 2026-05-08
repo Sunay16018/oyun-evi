@@ -1,6 +1,6 @@
 /* ============================================
    OYUN EVİ - Ana Sayfa JavaScript
-   iframe Sistemi ile Otomatik Geri Dön Butonu
+   Dinamik Oyun Kartları Yükleme Sistemi
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -38,13 +38,11 @@ async function oyunlariYukle() {
 }
 
 function oyunKartiOlustur(oyun, index) {
-    const kart = document.createElement('div');
+    const kart = document.createElement('a');
+    kart.href = oyun.baglanti;
     kart.className = 'game-card';
     kart.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.1}s`;
     kart.style.opacity = '0';
-    kart.onclick = function() {
-        oyunuAc(oyun);
-    };
 
     const iconAlani = document.createElement('div');
     iconAlani.className = 'card-icon';
@@ -93,84 +91,6 @@ function varsayilanIkonOlustur(oyunAdi) {
     return `<div class="default-icon" style="background: ${arkaPlanRengi};"><span style="color: #fff; font-weight: 900;">${ilkHarf}</span></div>`;
 }
 
-/* ============================================
-   OYUN AÇMA SİSTEMİ (GERİ DÖN BUTONLU)
-   ============================================ */
-function oyunuAc(oyun) {
-    // Tam ekran oyun overlay'i oluştur
-    const overlay = document.createElement('div');
-    overlay.id = 'oyun-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 9999;
-        background: #0a0a0f;
-    `;
-
-    // Geri dön butonu
-    const geriBtn = document.createElement('button');
-    geriBtn.innerHTML = '←';
-    geriBtn.title = 'Ana Sayfaya Dön';
-    geriBtn.style.cssText = `
-        position: fixed;
-        top: 12px; left: 12px;
-        z-index: 99999;
-        width: 38px; height: 38px;
-        border-radius: 50%;
-        background: rgba(10, 10, 15, 0.8);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1.5px solid rgba(0, 212, 255, 0.6);
-        color: #00d4ff;
-        font-size: 18px; font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 0 12px rgba(0, 212, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5);
-        outline: none;
-        padding: 0;
-        line-height: 1;
-    `;
-
-    geriBtn.onmouseenter = function() {
-        this.style.transform = 'scale(1.15)';
-        this.style.borderColor = '#ff00aa';
-        this.style.color = '#ff00aa';
-        this.style.boxShadow = '0 0 20px rgba(255, 0, 170, 0.6), 0 6px 16px rgba(0, 0, 0, 0.7)';
-    };
-
-    geriBtn.onmouseleave = function() {
-        this.style.transform = 'scale(1)';
-        this.style.borderColor = 'rgba(0, 212, 255, 0.6)';
-        this.style.color = '#00d4ff';
-        this.style.boxShadow = '0 0 12px rgba(0, 212, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5)';
-    };
-
-    geriBtn.onclick = function() {
-        document.body.removeChild(overlay);
-        document.body.style.overflow = '';
-    };
-
-    // Oyun iframe'i
-    const iframe = document.createElement('iframe');
-    iframe.src = oyun.baglanti;
-    iframe.style.cssText = `
-        width: 100%;
-        height: 100%;
-        border: none;
-    `;
-
-    overlay.appendChild(geriBtn);
-    overlay.appendChild(iframe);
-    document.body.appendChild(overlay);
-    document.body.style.overflow = 'hidden';
-}
-
-/* ============================================
-   ANİMASYON KEYFRAME'LERİ
-   ============================================ */
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
     @keyframes fadeInUp {
