@@ -5,8 +5,13 @@
 
 // Sayfa yüklendiğinde çalışacak ana fonksiyon
 document.addEventListener('DOMContentLoaded', function() {
-    oyunlariYukle();
-    geriDonButonuEkle(); // Geri dön butonunu otomatik ekle
+    // SADECE ana sayfada oyun kartlarını yükle
+    if (document.getElementById('oyun-kartlari')) {
+        oyunlariYukle();
+    }
+    
+    // Oyun sayfalarında geri dön butonu ekle (ana sayfada eklenmez)
+    geriDonButonuEkle();
 });
 
 /**
@@ -14,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 async function oyunlariYukle() {
     const kartlarAlani = document.getElementById('oyun-kartlari');
+    
+    // Eğer kartlar alanı yoksa (oyun sayfasındaysak) fonksiyondan çık
+    if (!kartlarAlani) return;
 
     // Yükleniyor mesajı göster
     kartlarAlani.innerHTML = '<div class="loading-text">🎮 Oyunlar yükleniyor...</div>';
@@ -142,14 +150,20 @@ function varsayilanIkonOlustur(oyunAdi) {
 
 /* ============================================
    OTOMATİK GERİ DÖN BUTONU EKLEME
-   Bu fonksiyon tüm oyun sayfalarında çalışır
+   SADECE oyun sayfalarında çalışır
+   Ana sayfada (oyun-kartlari varsa) buton eklenmez
    ============================================ */
 
 /**
  * Sayfaya otomatik olarak "Ana Sayfaya Dön" butonu ekler.
- * Buton, sitenin karanlık neon temasına uygun şekilde stilize edilir.
+ * Ana sayfada değilsek (oyun-kartlari elementi yoksa) butonu ekler.
  */
 function geriDonButonuEkle() {
+    // Ana sayfadaysak (oyun kartları alanı varsa) buton ekleme
+    if (document.getElementById('oyun-kartlari')) {
+        return; // Ana sayfadayız, buton ekleme
+    }
+    
     // Eğer buton zaten varsa tekrar ekleme
     if (document.getElementById('oyun-evi-geri-don')) {
         return;
@@ -165,7 +179,7 @@ function geriDonButonuEkle() {
         window.location.href = '/';
     };
 
-    // Butonu sayfanın en başına ekle (body'nin ilk çocuğu olarak)
+    // Butonu sayfanın en başına ekle
     document.body.prepend(geriButonu);
 }
 
