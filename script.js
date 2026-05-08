@@ -150,18 +150,13 @@ function varsayilanIkonOlustur(oyunAdi) {
 
 /* ============================================
    OTOMATİK GERİ DÖN BUTONU EKLEME
-   SADECE oyun sayfalarında çalışır
-   Ana sayfada (oyun-kartlari varsa) buton eklenmez
+   Küçük, ikonik tasarım - SADECE oyun sayfalarında
    ============================================ */
 
-/**
- * Sayfaya otomatik olarak "Ana Sayfaya Dön" butonu ekler.
- * Ana sayfada değilsek (oyun-kartlari elementi yoksa) butonu ekler.
- */
 function geriDonButonuEkle() {
     // Ana sayfadaysak (oyun kartları alanı varsa) buton ekleme
     if (document.getElementById('oyun-kartlari')) {
-        return; // Ana sayfadayız, buton ekleme
+        return;
     }
     
     // Eğer buton zaten varsa tekrar ekleme
@@ -171,17 +166,84 @@ function geriDonButonuEkle() {
 
     const geriButonu = document.createElement('button');
     geriButonu.id = 'oyun-evi-geri-don';
-    geriButonu.innerHTML = '🏠 GERİ DÖN';
+    geriButonu.innerHTML = '←';
     geriButonu.setAttribute('aria-label', 'Ana sayfaya dön');
-    geriButonu.setAttribute('title', 'Ana sayfaya geri dön');
+    geriButonu.setAttribute('title', 'Ana Sayfaya Dön');
+    
+    // Direkt stil uygula (CSS'ten bağımsız çalışsın)
+    geriButonu.style.cssText = `
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 99999;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(10, 10, 15, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(0, 212, 255, 0.6);
+        color: #00d4ff;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5);
+        outline: none;
+        line-height: 1;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    `;
     
     geriButonu.onclick = function() {
         window.location.href = '/';
     };
+    
+    // Hover efektleri
+    geriButonu.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.15)';
+        this.style.borderColor = '#ff00aa';
+        this.style.color = '#ff00aa';
+        this.style.boxShadow = '0 0 20px rgba(255, 0, 170, 0.6), 0 6px 16px rgba(0, 0, 0, 0.7)';
+        this.style.background = 'rgba(20, 10, 15, 0.9)';
+        this.title = 'Ana Sayfaya Dön';
+    });
+    
+    geriButonu.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+        this.style.borderColor = 'rgba(0, 212, 255, 0.6)';
+        this.style.color = '#00d4ff';
+        this.style.boxShadow = '0 0 12px rgba(0, 212, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5)';
+        this.style.background = 'rgba(10, 10, 15, 0.8)';
+    });
+    
+    // Mobil dokunmatik
+    geriButonu.addEventListener('touchstart', function() {
+        this.style.transform = 'scale(1.15)';
+        this.style.borderColor = '#ff00aa';
+        this.style.color = '#ff00aa';
+    });
+    
+    geriButonu.addEventListener('touchend', function() {
+        this.style.transform = 'scale(1)';
+        this.style.borderColor = 'rgba(0, 212, 255, 0.6)';
+        this.style.color = '#00d4ff';
+    });
 
-    // Butonu sayfanın en başına ekle
+    // Sayfanın en başına ekle
     document.body.prepend(geriButonu);
+    
+    console.log('✅ Geri dön butonu eklendi');
 }
+
+// Sayfa tam yüklendiğinde de kontrol et (geç yüklenen içerikler için)
+window.addEventListener('load', function() {
+    // Kısa bir gecikmeyle tekrar dene (bazı oyunlar geç yükleniyor olabilir)
+    setTimeout(geriDonButonuEkle, 500);
+});
 
 /* ============================================
    ANİMASYON KEYFRAME'LERİ (JavaScript ile ekleniyor)
