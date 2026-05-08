@@ -6,6 +6,7 @@
 // Sayfa yüklendiğinde çalışacak ana fonksiyon
 document.addEventListener('DOMContentLoaded', function() {
     oyunlariYukle();
+    geriDonButonuEkle(); // Geri dön butonunu otomatik ekle
 });
 
 /**
@@ -137,6 +138,35 @@ function varsayilanIkonOlustur(oyunAdi) {
             <span style="color: #fff; font-weight: 900;">${ilkHarf}</span>
         </div>
     `;
+}
+
+/* ============================================
+   OTOMATİK GERİ DÖN BUTONU EKLEME
+   Bu fonksiyon tüm oyun sayfalarında çalışır
+   ============================================ */
+
+/**
+ * Sayfaya otomatik olarak "Ana Sayfaya Dön" butonu ekler.
+ * Buton, sitenin karanlık neon temasına uygun şekilde stilize edilir.
+ */
+function geriDonButonuEkle() {
+    // Eğer buton zaten varsa tekrar ekleme
+    if (document.getElementById('oyun-evi-geri-don')) {
+        return;
+    }
+
+    const geriButonu = document.createElement('button');
+    geriButonu.id = 'oyun-evi-geri-don';
+    geriButonu.innerHTML = '🏠 GERİ DÖN';
+    geriButonu.setAttribute('aria-label', 'Ana sayfaya dön');
+    geriButonu.setAttribute('title', 'Ana sayfaya geri dön');
+    
+    geriButonu.onclick = function() {
+        window.location.href = '/';
+    };
+
+    // Butonu sayfanın en başına ekle (body'nin ilk çocuğu olarak)
+    document.body.prepend(geriButonu);
 }
 
 /* ============================================
