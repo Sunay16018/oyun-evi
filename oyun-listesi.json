@@ -6,10 +6,16 @@
         "baglanti": "oyunlar/zorlabireni/index.html"
     },
     {
-        "id": "blokblasy",
+        "id": "blokblast",
         "ad": "Block Blast",
         "ikon": "oyunlar/blockblast/ikon.png",
         "baglanti": "oyunlar/blockblast/index.html"
+    },
+    {
+        "id": "clicker",
+        "ad": "COSMIC FORGE: Empire of Clicks",
+        "ikon": "oyunlar/clicker/ikon.png",
+        "baglanti": "oyunlar/clicker/index.html"
     },
     {
         "id": "longcat",
