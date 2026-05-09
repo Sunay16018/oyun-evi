@@ -2,21 +2,25 @@
     "name": "Cosmic Forge: Empire of Clicks",
     "short_name": "Cosmic Forge",
     "description": "Kozmik enerji topla, evreni inşa et! Destansı clicker oyunu.",
-    "start_url": "/",
+    "start_url": "/oyunlar/clicker/index.html",
     "display": "standalone",
     "background_color": "#0a0a2e",
     "theme_color": "#0a0a2e",
-    "orientation": "portrait-primary",
+    "orientation": "any",
+    "scope": "/",
+    "lang": "tr",
     "icons": [
         {
             "src": "ikon.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
             "src": "ikon.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
 }
