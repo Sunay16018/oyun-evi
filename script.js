@@ -1,6 +1,7 @@
 /* ============================================
    OYUN EVİ - Ana Sayfa JavaScript
-   Dinamik Oyun Kartları + Geri Dön Butonu + Popunder Reklam
+   Dinamik Oyun Kartları + Geri Dön Butonu + Reklamlar
+   Reklamlar: Popunder + Social Bar
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,53 +9,75 @@ document.addEventListener('DOMContentLoaded', function() {
         oyunlariYukle();
     }
     geriDonButonuEkle();
-    popunderReklamYukle();
+    reklamlariYukle();
 });
 
 /* ============================================
-   POPUNDER REKLAM - Sayfa Yüklenince + Sekme Değişince
+   REKLAM SİSTEMİ
+   Popunder + Social Bar + Sekme Takibi
    ============================================ */
-let popunderGosterildi = false;
+let reklamGosterildi = false;
+let socialBarYuklendi = false;
 
-function popunderReklamGoster() {
-    if (popunderGosterildi) return;
+function socialBarYukle() {
+    if (socialBarYuklendi) return;
+    
+    const script = document.createElement('script');
+    script.src = 'https://turnstilesocially.com/e0/97/9f/e0979f70a004fd46d7f09203183d33ce.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    socialBarYuklendi = true;
+    console.log('📢 Social Bar reklam yüklendi');
+}
+
+function popunderGoster() {
+    if (reklamGosterildi) return;
     
     const script = document.createElement('script');
     script.src = 'https://turnstilesocially.com/a9/a8/db/a9a8db0ea77f7d9922b92573f62db3f8.js';
     script.async = true;
     document.body.appendChild(script);
     
-    popunderGosterildi = true;
+    reklamGosterildi = true;
     console.log('📢 Popunder reklam gösterildi');
 }
 
-function popunderReklamYukle() {
-    // Sayfa yüklendikten 1 saniye sonra ilk reklamı göster
+function reklamlariYukle() {
+    // Social Bar hemen yüklensin (her zaman görünür)
     setTimeout(function() {
-        popunderReklamGoster();
+        socialBarYukle();
+    }, 500);
+    
+    // Popunder 1 saniye sonra
+    setTimeout(function() {
+        popunderGoster();
     }, 1000);
     
-    // Kullanıcı sekmeyi değiştirip geri dönünce tekrar göster
+    // Sekme değişiminde Popunder
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'visible') {
-            // Sekmeye geri dönünce 500ms bekle, sonra reklam göster
             setTimeout(function() {
-                popunderReklamGoster();
+                popunderGoster();
             }, 500);
         }
     });
     
-    // Tıklama olaylarında da reklam göster (oyun mantığıyla uyumlu)
+    // Tıklamalarda Popunder
     document.addEventListener('click', function(e) {
-        // Butona veya linke tıklanınca reklam göster
-        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a') || e.target.closest('button')) {
+        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
+            e.target.closest('a') || e.target.closest('button') ||
+            e.target.closest('.game-card')) {
             setTimeout(function() {
-                popunderReklamGoster();
+                popunderGoster();
             }, 300);
         }
     });
 }
 
+/* ============================================
+   OYUN KARTLARI YÜKLEME
+   ============================================ */
 async function oyunlariYukle() {
     const kartlarAlani = document.getElementById('oyun-kartlari');
     if (!kartlarAlani) return;
@@ -137,6 +160,9 @@ function varsayilanIkonOlustur(oyunAdi) {
     return `<div class="default-icon" style="background: ${arkaPlanRengi};"><span style="color: #fff; font-weight: 900;">${ilkHarf}</span></div>`;
 }
 
+/* ============================================
+   GERİ DÖN BUTONU
+   ============================================ */
 function geriDonButonuEkle() {
     if (document.getElementById('oyun-kartlari')) return;
     if (document.getElementById('oyun-evi-geri-don')) return;
@@ -177,6 +203,9 @@ function geriDonButonuEkle() {
     document.body.prepend(btn);
 }
 
+/* ============================================
+   ANİMASYONLAR
+   ============================================ */
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
     @keyframes fadeInUp {
