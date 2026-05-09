@@ -1,6 +1,6 @@
 /* ============================================
    OYUN EVİ - Ana Sayfa JavaScript
-   Dinamik Oyun Kartları + Otomatik Geri Dön Butonu
+   Dinamik Oyun Kartları + Geri Dön Butonu + Popunder Reklam
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,7 +8,52 @@ document.addEventListener('DOMContentLoaded', function() {
         oyunlariYukle();
     }
     geriDonButonuEkle();
+    popunderReklamYukle();
 });
+
+/* ============================================
+   POPUNDER REKLAM - Sayfa Yüklenince + Sekme Değişince
+   ============================================ */
+let popunderGosterildi = false;
+
+function popunderReklamGoster() {
+    if (popunderGosterildi) return;
+    
+    const script = document.createElement('script');
+    script.src = 'https://turnstilesocially.com/a9/a8/db/a9a8db0ea77f7d9922b92573f62db3f8.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    popunderGosterildi = true;
+    console.log('📢 Popunder reklam gösterildi');
+}
+
+function popunderReklamYukle() {
+    // Sayfa yüklendikten 1 saniye sonra ilk reklamı göster
+    setTimeout(function() {
+        popunderReklamGoster();
+    }, 1000);
+    
+    // Kullanıcı sekmeyi değiştirip geri dönünce tekrar göster
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            // Sekmeye geri dönünce 500ms bekle, sonra reklam göster
+            setTimeout(function() {
+                popunderReklamGoster();
+            }, 500);
+        }
+    });
+    
+    // Tıklama olaylarında da reklam göster (oyun mantığıyla uyumlu)
+    document.addEventListener('click', function(e) {
+        // Butona veya linke tıklanınca reklam göster
+        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a') || e.target.closest('button')) {
+            setTimeout(function() {
+                popunderReklamGoster();
+            }, 300);
+        }
+    });
+}
 
 async function oyunlariYukle() {
     const kartlarAlani = document.getElementById('oyun-kartlari');
