@@ -4,16 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Forge: Empire of Clicks</title>
-    <!-- Favicon -->
-<link rel="icon" type="image/png" href="ikon.png">
-<link rel="apple-touch-icon" href="ikon.png">
-
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0a0a2e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Cosmic Forge">
     <style>
         * {
             margin: 0;
@@ -1197,9 +1187,10 @@
                 crystalSphere.style.transform = 'scale(1)';
             }, 100);
 
-            updateDisplay();
-            checkAchievements();
-        });
+                updateDisplay();
+    checkAchievements();
+    saveGame(); // 🔧 EKLENDİ: Her tıklamada kaydet
+});
 
         // Tab Switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1541,14 +1532,17 @@ ${formatNumber(offlineEarnings)} Kozmik Toz kazandın!`,
 
         // Update Display
         function updateDisplay() {
-            document.getElementById('cosmicDust').textContent = formatNumber(gameState.cosmicDust);
-            document.getElementById('starEssence').textContent = formatNumber(gameState.starEssence);
-            document.getElementById('darkMatter').textContent = formatNumber(gameState.darkMatter);
-            document.getElementById('productionRate').textContent = formatNumber(getTotalProduction());
-            document.getElementById('clickPower').textContent = formatNumber(getClickPower());
-
-            updatePrestige();
-        }
+    document.getElementById('cosmicDust').textContent = formatNumber(gameState.cosmicDust);
+    document.getElementById('starEssence').textContent = formatNumber(gameState.starEssence);
+    document.getElementById('darkMatter').textContent = formatNumber(gameState.darkMatter);
+    document.getElementById('productionRate').textContent = formatNumber(getTotalProduction());
+    document.getElementById('clickPower').textContent = formatNumber(getClickPower());
+    updatePrestige();
+    
+    // 🔧 EKLENDİ: Her güncellemede kartları da yenile
+    renderGenerators();
+    renderUpgrades();
+}
 
         // Game Loop
         let lastTick = Date.now();
@@ -1569,8 +1563,8 @@ ${formatNumber(offlineEarnings)} Kozmik Toz kazandın!`,
 
             updateDisplay();
 
-            // Auto-save every 30 seconds
-            if (now - gameState.lastSave > 30000) {
+            // Auto-save every 10 seconds
+            if (now - gameState.lastSave > 10000) {
                 saveGame();
             }
 
@@ -1602,6 +1596,5 @@ ${formatNumber(offlineEarnings)} Kozmik Toz kazandın!`,
         initBubbles();
         gameLoop();
     </script>
-    <script src="/script.js"></script>
 </body>
 </html>
