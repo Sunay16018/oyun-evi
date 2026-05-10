@@ -27,8 +27,7 @@
     </header>
 
     <main class="games-container">
-        <div id="oyun-kartlari" class="games-grid">
-            </div>
+        <div id="oyun-kartlari" class="games-grid"></div>
     </main>
 
     <footer class="main-footer">
@@ -36,36 +35,42 @@
         <p class="footer-copy">&copy; 2026 Oyun Evi - Tüm Hakları Saklıdır</p>
     </footer>
 
-    <div id="sayac-kutusu" style="position:fixed; bottom:15px; right:15px; background:rgba(0,0,0,0.8); color:#00ffcc; border:2px solid #00ffcc; padding:10px; border-radius:10px; font-family:monospace; z-index:9999; box-shadow: 0 0 10px #00ffcc;">
-        AKTİF KULLANICI: <span id="sayi">...</span>
+    <div id="sayac-kutusu" style="position:fixed; bottom:15px; right:15px; background:rgba(0,0,0,0.85); color:#00ffcc; border:2px solid #00ffcc; padding:10px 15px; border-radius:10px; font-family:monospace; z-index:9999; box-shadow: 0 0 10px rgba(0,255,204,0.5);">
+        ZİYARETÇİ: <span id="sayi">...</span>
     </div>
 
     <script>
-        async function sayaciGuncelle() {
-    console.log("Sayaç isteği başlatıldı..."); // Kontrol için
-    try {
-        // Başına tam yol veriyoruz
-        const response = await fetch('/api/ziyaret');
-        
-        if (!response.ok) {
-            throw new Error('Dosya bulunamadı: ' + response.status);
+        // 1. Sayfa ilk açıldığında IP kontrolüyle artır/oku
+        async function ilkGiris() {
+            try {
+                const response = await fetch('/api/ziyaret?ilk=true');
+                const data = await response.json();
+                if (data && data.miktar !== undefined) {
+                    document.getElementById('sayi').innerText = data.miktar;
+                }
+            } catch (e) { console.error("Giriş hatası:", e); }
         }
 
-        const data = await response.json();
-        console.log("Gelen veri:", data); // Veri gelirse burada göreceğiz
-
-        if (data && data.miktar !== undefined) {
-            document.getElementById('sayi').innerText = data.miktar;
-        } else {
-            document.getElementById('sayi').innerText = "Hata 1";
+        // 2. Anlık güncelleme (Sadece oku)
+        async function anlikGuncelle() {
+            try {
+                const response = await fetch('/api/ziyaret');
+                const data = await response.json();
+                if (data && data.miktar !== undefined) {
+                    const el = document.getElementById('sayi');
+                    // Sayı değişmişse güncelle ve efekt ver
+                    if (el.innerText !== data.miktar.toString()) {
+                        el.innerText = data.miktar;
+                        el.style.color = "#fff"; // Kısa süreli renk değişimi
+                        setTimeout(() => { el.style.color = "#00ffcc"; }, 500);
+                    }
+                }
+            } catch (e) { }
         }
-    } catch (e) {
-        console.error("İstek hatası:", e);
-        document.getElementById('sayi').innerText = "Hata 2";
-    }
-}
-sayaciGuncelle();
 
+        ilkGiris();
+        // Her 3 saniyede bir yeni ziyaretçi var mı diye kontrol et
+        setInterval(anlikGuncelle, 3000);
     </script>
     
     <script src="script.js"></script>
