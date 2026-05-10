@@ -3,7 +3,7 @@ const uri = process.env.MONGODB_URI;
 let cachedClient = null;
 
 export default async function handler(req, res) {
-    if (!uri) return res.status(500).json({ error: "MONGODB_URI eksik!" });
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
     if (!cachedClient) {
         cachedClient = new MongoClient(uri);
@@ -12,31 +12,26 @@ export default async function handler(req, res) {
 
     try {
         const db = cachedClient.db('oyun_evi_db');
-        const counterCol = db.collection('sayaclar');
-        const ipsCol = db.collection('ziyaretci_ipleri');
+        const aktiflerCol = db.collection('aktif_kullanicilar');
 
-        const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        const isFirstLoad = req.query.ilk === 'true'; // Sayfa ilk açıldığında bu true gelecek
+        // Kullanıcının benzersiz kimliği (IP + UserAgent birleşimi)
+        const userId = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-        if (isFirstLoad) {
-            const alreadyExists = await ipsCol.findOne({ ip: userIp });
+        // 1. Kullanıcıyı "Aktif" olarak işaretle veya vaktini güncelle
+        await aktiflerCol.updateOne(
+            { _id: userId },
+            { $set: { sonGorulme: new Date() } },
+            { upsert: true }
+        );
 
-            if (!alreadyExists) {
-                // Yeni IP: Kaydet ve +1 artır
-                await ipsCol.insertOne({ ip: userIp, tarih: new Date() });
-                const update = await counterCol.findOneAndUpdate(
-                    { _id: 'toplam_ziyaretci' },
-                    { $inc: { count: 1 } },
-                    { upsert: true, returnDocument: 'after' }
-                );
-                const miktar = update.value ? update.value.count : (update.count || 1);
-                return res.status(200).json({ miktar: miktar });
-            }
-        }
+        // 2. 30 saniyeden daha eski olan "hayalet" kullanıcıları temizle
+        const sınırVakti = new Date(Date.now() - 30 * 1000); 
+        await aktiflerCol.deleteMany({ sonGorulme: { $lt: sınırVakti } });
 
-        // Eski IP veya Anlık Güncelleme: Sadece sayıyı oku
-        const current = await counterCol.findOne({ _id: 'toplam_ziyaretci' });
-        res.status(200).json({ miktar: current ? current.count : 0 });
+        // 3. Şu an kaç tane aktif kayıt var say
+        const aktifSayisi = await aktiflerCol.countDocuments();
+
+        res.status(200).json({ miktar: aktifSayisi });
 
     } catch (e) {
         res.status(500).json({ error: e.message });
