@@ -42,30 +42,30 @@
 
     <script>
         async function sayaciGuncelle() {
-            try {
-                // sessionStorage kullanarak bu sekmede daha önce saydırıp saydırmadığımızı kontrol ediyoruz
-                // Bu sayede F5 yapınca sayı artmaz, sadece site ilk açıldığında artar.
-                const hasVisited = sessionStorage.getItem('visited');
-                
-                // API'ye 'increase' parametresi gönderiyoruz (Eğer ilk gelişse artıracak)
-                const url = hasVisited ? '/api/ziyaret' : '/api/ziyaret?artir=true';
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                // Senin API 'miktar' gönderdiği için data.miktar kullanıyoruz
-                if (data && data.miktar !== undefined) {
-                    document.getElementById('sayi').innerText = data.miktar;
-                    sessionStorage.setItem('visited', 'true');
-                } else {
-                    document.getElementById('sayi').innerText = "0";
-                }
-            } catch (e) {
-                console.error("Sayaç hatası:", e);
-                document.getElementById('sayi').innerText = "Hata";
-            }
+    console.log("Sayaç isteği başlatıldı..."); // Kontrol için
+    try {
+        // Başına tam yol veriyoruz
+        const response = await fetch('/api/ziyaret');
+        
+        if (!response.ok) {
+            throw new Error('Dosya bulunamadı: ' + response.status);
         }
-        sayaciGuncelle();
+
+        const data = await response.json();
+        console.log("Gelen veri:", data); // Veri gelirse burada göreceğiz
+
+        if (data && data.miktar !== undefined) {
+            document.getElementById('sayi').innerText = data.miktar;
+        } else {
+            document.getElementById('sayi').innerText = "Hata 1";
+        }
+    } catch (e) {
+        console.error("İstek hatası:", e);
+        document.getElementById('sayi').innerText = "Hata 2";
+    }
+}
+sayaciGuncelle();
+
     </script>
     
     <script src="script.js"></script>
