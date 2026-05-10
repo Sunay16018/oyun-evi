@@ -42,22 +42,29 @@
     </footer>
     <div id="sayac-kutusu" style="
     position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: #000;
-    color: #0f0;
-    padding: 10px;
-    border-radius: 10px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 14px;
-    border: 2px solid #333;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #00ffcc;
+    padding: 12px;
+    border-radius: 12px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    border: 1px solid #00ffcc;
     z-index: 9999;
     text-align: center;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
 ">
-    <div style="margin-bottom: 5px;">TOPLAM ZİYARETÇİ</div>
-    <!-- Güvenilir bir servis üzerinden resim olarak sayaç -->
-    <img src="https://counter.secrethit.com/counter/display?page=oyunevi_2026_toplam&style=0012&nbdigits=5" alt="Sayaç" style="vertical-align: middle;">
+    <div style="font-weight: bold; letter-spacing: 1px; margin-bottom: 4px;">TOPLAM GİRİŞ</div>
+    <div id="visit-count" style="font-size: 20px; font-weight: bold; color: #fff;">...</div>
 </div>
+
+<script>
+function cb(response) {
+    document.getElementById('visit-count').innerText = response.value;
+}
+</script>
+<script async src="https://api.countapi.xyz/hit/oyunevi-vercel-app/visits?callback=cb"></script>
 
     <script src="script.js"></script>
 </body>
