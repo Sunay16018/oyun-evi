@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oyun Evi - Oynamak İçin Bir Oyun Seç</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Sayaç Kutusu Tasarımı */
+        #sayac-kutusu {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            z-index: 9999;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+            pointer-events: none; /* Tıklamaya engel olmasın */
+            user-select: none;
+        }
+
+        #sayi {
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.5s ease;
+            display: inline-block;
+        }
+
+        .online-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #00ffcc;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            box-shadow: 0 0 8px #00ffcc;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
     <div class="bg-shapes">
@@ -27,7 +69,8 @@
     </header>
 
     <main class="games-container">
-        <div id="oyun-kartlari" class="games-grid"></div>
+        <div id="oyun-kartlari" class="games-grid">
+            </div>
     </main>
 
     <footer class="main-footer">
@@ -35,42 +78,51 @@
         <p class="footer-copy">&copy; 2026 Oyun Evi - Tüm Hakları Saklıdır</p>
     </footer>
 
-    <div id="sayac-kutusu" style="position:fixed; bottom:15px; right:15px; background:rgba(0,0,0,0.85); color:#00ffcc; border:2px solid #00ffcc; padding:10px 15px; border-radius:10px; font-family:monospace; z-index:9999; box-shadow: 0 0 10px rgba(0,255,204,0.5);">
-        ZİYARETÇİ: <span id="sayi">...</span>
+    <div id="sayac-kutusu">
+        <span class="online-dot"></span>
+        ŞU AN: <span id="sayi">...</span> AKTİF
     </div>
 
     <script>
-        // 1. Sayfa ilk açıldığında IP kontrolüyle artır/oku
-        async function ilkGiris() {
+        /**
+         * Aktiflik Sinyali (Heartbeat) Fonksiyonu
+         * Bu fonksiyon her çağrıldığında veritabanına "ben buradayım" der
+         * ve veritabanından o anki toplam aktif sayısını alır.
+         */
+        async function sinyalGonder() {
             try {
-                const response = await fetch('/api/ziyaret?ilk=true');
+                // Tarayıcı önbelleğini (cache) kırmak için her seferinde farklı bir URL (?t=...)
+                const response = await fetch(`/api/ziyaret?t=${Date.now()}`);
                 const data = await response.json();
+                
                 if (data && data.miktar !== undefined) {
-                    document.getElementById('sayi').innerText = data.miktar;
-                }
-            } catch (e) { console.error("Giriş hatası:", e); }
-        }
+                    const sayiElementi = document.getElementById('sayi');
+                    const yeniDeger = data.miktar.toString();
 
-        // 2. Anlık güncelleme (Sadece oku)
-        async function anlikGuncelle() {
-            try {
-                const response = await fetch('/api/ziyaret');
-                const data = await response.json();
-                if (data && data.miktar !== undefined) {
-                    const el = document.getElementById('sayi');
-                    // Sayı değişmişse güncelle ve efekt ver
-                    if (el.innerText !== data.miktar.toString()) {
-                        el.innerText = data.miktar;
-                        el.style.color = "#fff"; // Kısa süreli renk değişimi
-                        setTimeout(() => { el.style.color = "#00ffcc"; }, 500);
+                    // Eğer sayı değişmişse görsel efektle güncelle
+                    if (sayiElementi.innerText !== yeniDeger) {
+                        sayiElementi.style.color = "#fff";
+                        sayiElementi.style.transform = "scale(1.3)";
+                        sayiElementi.innerText = yeniDeger;
+                        
+                        setTimeout(() => {
+                            sayiElementi.style.color = "#00ffcc";
+                            sayiElementi.style.transform = "scale(1)";
+                        }, 500);
                     }
                 }
-            } catch (e) { }
+            } catch (e) {
+                console.error("Aktiflik verisi alınamadı:", e);
+                document.getElementById('sayi').innerText = "?";
+            }
         }
 
-        ilkGiris();
-        // Her 3 saniyede bir yeni ziyaretçi var mı diye kontrol et
-        setInterval(anlikGuncelle, 3000);
+        // 1. Sayfa açılır açılmaz hemen ilk sinyali gönder
+        sinyalGonder();
+
+        // 2. Her 10 saniyede bir (10000 ms) sinyal göndermeye devam et.
+        // Bu sayede kullanıcı sekmeyi kapatınca sinyal kesilir ve 30 saniye içinde listeden düşer.
+        setInterval(sinyalGonder, 10000);
     </script>
     
     <script src="script.js"></script>
