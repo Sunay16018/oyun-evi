@@ -40,7 +40,42 @@
         <p class="neon-slogan">✨ Tıkla ve Oynamaya Başla ✨</p>
         <p class="footer-copy">&copy; 2026 Oyun Evi - Tüm Hakları Saklıdır</p>
     </footer>
+    <div id="sayac-kutusu" style="
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: #222;
+    color: #00ff00;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    border: 1px solid #444;
+    z-index: 9999;
+">
+    Ziyaretçi: <span id="sayi">Yükleniyor...</span>
+</div>
 
+<script>
+    // Bu fonksiyon CountAPI kullanarak sayıyı artırır ve çeker
+    function ziyaretiKaydet() {
+        // 'oyunevi-toplam-ziyaret' senin anahtarın. Bunu değiştirirsen sayaç sıfırlanır.
+        const url = "https://api.countapi.xyz/hit/oyun-evi.vercel.app/oyunevi-toplam-ziyaret";
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('sayi').innerText = data.value;
+            })
+            .catch(err => {
+                document.getElementById('sayi').innerText = "Hata!";
+                console.error(err);
+            });
+    }
+
+    // Sayfa açıldığında çalıştır
+    ziyaretiKaydet();
+</script>
     <script src="script.js"></script>
 </body>
 </html>
