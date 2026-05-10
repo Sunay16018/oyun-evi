@@ -44,37 +44,36 @@
     position: fixed;
     bottom: 10px;
     right: 10px;
-    background: #222;
+    background: #1a1a1a;
     color: #00ff00;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    border: 1px solid #444;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    border: 1px solid #333;
     z-index: 9999;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 ">
-    Ziyaretçi: <span id="sayi">Yükleniyor...</span>
+    🌐 <span id="sayi">Yükleniyor...</span> Ziyaret
 </div>
 
 <script>
-    // Bu fonksiyon CountAPI kullanarak sayıyı artırır ve çeker
-    function ziyaretiKaydet() {
-        // 'oyunevi-toplam-ziyaret' senin anahtarın. Bunu değiştirirsen sayaç sıfırlanır.
-        const url = "https://api.countapi.xyz/hit/oyun-evi.vercel.app/oyunevi-toplam-ziyaret";
+    async function sayaciGuncelle() {
+        const anahtar = "oyunevi-toplam-2026"; // Bunu kendine özel bir kelime yap
+        const url = `https://api.countapi.it/hit/oyun-evi-site/${anahtar}`;
 
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('sayi').innerText = data.value;
-            })
-            .catch(err => {
-                document.getElementById('sayi').innerText = "Hata!";
-                console.error(err);
-            });
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            document.getElementById('sayi').innerText = data.value;
+        } catch (error) {
+            // Eğer servis hata verirse, en azından "Hata" yerine şık bir simge gösterir
+            document.getElementById('sayi').innerText = "---";
+            console.log("Sayaç servisinden yanıt alınamadı.");
+        }
     }
 
-    // Sayfa açıldığında çalıştır
-    ziyaretiKaydet();
+    sayaciGuncelle();
 </script>
     <script src="script.js"></script>
 </body>
