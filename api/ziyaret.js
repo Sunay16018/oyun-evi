@@ -1,27 +1,44 @@
 const { MongoClient } = require('mongodb');
 const uri = process.env.MONGODB_URI;
+let cachedClient = null;
 
 export default async function handler(req, res) {
-    if (!uri) return res.status(500).json({ error: "Vercel'de MONGODB_URI ekli değil!" });
+    if (!uri) return res.status(500).json({ error: "MONGODB_URI eksik!" });
 
-    const client = new MongoClient(uri);
+    if (!cachedClient) {
+        cachedClient = new MongoClient(uri);
+        await cachedClient.connect();
+    }
 
     try {
-        await client.connect();
-        const db = client.db('oyun_evi_db');
-        const collection = db.collection('sayaclar');
+        const db = cachedClient.db('oyun_evi_db');
+        const counterCol = db.collection('sayaclar');
+        const ipsCol = db.collection('ziyaretci_ipleri');
 
-        const result = await collection.findOneAndUpdate(
-            { _id: 'sayac_test' },
-            { $inc: { miktar: 1 } },
-            { upsert: true, returnDocument: 'after' }
-        );
+        const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        const isFirstLoad = req.query.ilk === 'true'; // Sayfa ilk açıldığında bu true gelecek
 
-        const miktar = result.value ? result.value.miktar : (result.miktar || 1);
-        res.status(200).json({ miktar: miktar });
+        if (isFirstLoad) {
+            const alreadyExists = await ipsCol.findOne({ ip: userIp });
+
+            if (!alreadyExists) {
+                // Yeni IP: Kaydet ve +1 artır
+                await ipsCol.insertOne({ ip: userIp, tarih: new Date() });
+                const update = await counterCol.findOneAndUpdate(
+                    { _id: 'toplam_ziyaretci' },
+                    { $inc: { count: 1 } },
+                    { upsert: true, returnDocument: 'after' }
+                );
+                const miktar = update.value ? update.value.count : (update.count || 1);
+                return res.status(200).json({ miktar: miktar });
+            }
+        }
+
+        // Eski IP veya Anlık Güncelleme: Sadece sayıyı oku
+        const current = await counterCol.findOne({ _id: 'toplam_ziyaretci' });
+        res.status(200).json({ miktar: current ? current.count : 0 });
+
     } catch (e) {
-        res.status(500).json({ error: "Baglanti Hatasi: " + e.message });
-    } finally {
-        await client.close();
+        res.status(500).json({ error: e.message });
     }
 }
