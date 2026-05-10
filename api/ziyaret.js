@@ -1,29 +1,33 @@
 const { MongoClient } = require('mongodb');
 
-// Vercel ayarlarından MONGODB_URI'yi çeker
 const uri = process.env.MONGODB_URI;
-let client;
 
 export default async function handler(req, res) {
-    if (!client) {
-        client = new MongoClient(uri);
-        await client.connect();
+    if (!uri) {
+        return res.status(500).json({ error: "MONGODB_URI tanımlı değil!" });
     }
-    
-    try {
-        const database = client.db('oyun_evi_veritabani');
-        const sayaclar = database.collection('sayac_verisi');
 
-        // 'toplam' kaydını bul ve 1 artır. Eğer yoksa yeni oluştur (upsert).
-        const result = await sayaclar.findOneAndUpdate(
-            { id: 'genel_sayac' },
-            { $inc: { miktar: 1 } },
+    const client = new MongoClient(uri);
+
+    try {
+        await client.connect();
+        const db = client.db('oyun_evi_db');
+        const collection = db.collection('sayaclar');
+
+        const result = await collection.findOneAndUpdate(
+            { _id: 'toplam_ziyaret' },
+            { $inc: { count: 1 } },
             { upsert: true, returnDocument: 'after' }
         );
 
-        // Başarılıysa sayıyı gönder
-        res.status(200).json({ toplam: result.miktar });
+        // MongoDB sürümüne göre 'value' veya 'count' dönebilir
+        const miktar = result.count || (result.value && result.value.count) || result.miktar;
+        res.status(200).json({ miktar: miktar });
+
     } catch (error) {
-        res.status(500).json({ error: "Veritabanı hatası: " + error.message });
+        // Hatayı detaylıca gönderiyoruz
+        res.status(500).json({ error: error.message });
+    } finally {
+        await client.close();
     }
 }
