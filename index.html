@@ -40,6 +40,29 @@
         <p class="neon-slogan">✨ Tıkla ve Oynamaya Başla ✨</p>
         <p class="footer-copy">&copy; 2026 Oyun Evi - Tüm Hakları Saklıdır</p>
     </footer>
+    <div id="sayac-kutusu" style="position:fixed; bottom:15px; right:15px; background:#000; color:#00ffcc; border:2px solid #00ffcc; padding:10px; border-radius:10px; font-family:monospace; z-index:9999;">
+    ZİYARETÇİ: <span id="sayi">...</span>
+</div>
+
+<script>
+    async function sayaciGuncelle() {
+        try {
+            // Yazdığımız API dosyasını çağırıyoruz
+            const response = await fetch('/api/ziyaret');
+            const data = await response.json();
+            
+            if(data.toplam) {
+                document.getElementById('sayi').innerText = data.toplam;
+            } else {
+                document.getElementById('sayi').innerText = "Hata";
+            }
+        } catch (e) {
+            document.getElementById('sayi').innerText = "Hata";
+        }
+    }
+    sayaciGuncelle();
+</script>
+    
     
     <script src="script.js"></script>
 </body>
