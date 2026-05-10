@@ -40,32 +40,7 @@
         <p class="neon-slogan">✨ Tıkla ve Oynamaya Başla ✨</p>
         <p class="footer-copy">&copy; 2026 Oyun Evi - Tüm Hakları Saklıdır</p>
     </footer>
-    <div id="sayac-kutusu" style="
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.85);
-    color: #00ffcc;
-    padding: 12px;
-    border-radius: 12px;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    font-size: 13px;
-    border: 1px solid #00ffcc;
-    z-index: 9999;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
-">
-    <div style="font-weight: bold; letter-spacing: 1px; margin-bottom: 4px;">TOPLAM GİRİŞ</div>
-    <div id="visit-count" style="font-size: 20px; font-weight: bold; color: #fff;">...</div>
-</div>
-
-<script>
-function cb(response) {
-    document.getElementById('visit-count').innerText = response.value;
-}
-</script>
-<script async src="https://api.countapi.xyz/hit/oyunevi-vercel-app/visits?callback=cb"></script>
-
+    
     <script src="script.js"></script>
 </body>
 </html>
