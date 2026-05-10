@@ -1,33 +1,34 @@
 const { MongoClient } = require('mongodb');
-
 const uri = process.env.MONGODB_URI;
 let cachedClient = null;
 
 export default async function handler(req, res) {
-    if (!uri) {
-        return res.status(500).json({ error: "MONGODB_URI eksik!" });
+    if (!cachedClient) {
+        cachedClient = new MongoClient(uri);
+        await cachedClient.connect();
     }
 
     try {
-        if (!cachedClient) {
-            cachedClient = new MongoClient(uri);
-            await cachedClient.connect();
-        }
-
         const db = cachedClient.db('oyun_evi_db');
         const collection = db.collection('sayaclar');
+        const shouldIncrease = req.query.artir === 'true';
 
-        const result = await collection.findOneAndUpdate(
-            { _id: 'genel_sayac' },
-            { $inc: { count: 1 } },
-            { upsert: true, returnDocument: 'after' }
-        );
+        let result;
+        if (shouldIncrease) {
+            // Eğer URL'de ?artir=true varsa sayıyı artır
+            result = await collection.findOneAndUpdate(
+                { _id: 'genel_sayac' },
+                { $inc: { count: 1 } },
+                { upsert: true, returnDocument: 'after' }
+            );
+        } else {
+            // Yoksa sadece mevcut sayıyı oku
+            result = await collection.findOne({ _id: 'genel_sayac' });
+        }
 
-        // MongoDB versiyonlarına göre veri kontrolü
-        const miktar = result.value ? result.value.count : (result.count || 0);
-
+        const miktar = result ? (result.count || (result.value && result.value.count) || 0) : 0;
         res.status(200).json({ miktar: miktar });
     } catch (e) {
-        res.status(500).json({ error: "Veritabanı hatası: " + e.message });
+        res.status(500).json({ error: e.message });
     }
 }
