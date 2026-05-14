@@ -1,5 +1,17 @@
 [
     {
+        "id": "clicker",
+        "ad": "COSMIC FORGE: Empire of Clicks",
+        "ikon": "oyunlar/clicker/ikon.png",
+        "baglanti": "oyunlar/clicker/index.html"
+    },
+    {
+        "id": "mario",
+        "ad": "SUPER MARİO BROS",
+        "ikon": "oyunlar/mario/ikon.png",
+        "baglanti": "oyunlar/mario/index.html"
+    },
+    {
         "id": "zorlabireni",
         "ad": "Zorlabireni",
         "ikon": "oyunlar/zorlabireni/ikon.png",
@@ -10,12 +22,6 @@
         "ad": "Block Blast",
         "ikon": "oyunlar/blockblast/ikon.png",
         "baglanti": "oyunlar/blockblast/index.html"
-    },
-    {
-        "id": "clicker",
-        "ad": "COSMIC FORGE: Empire of Clicks",
-        "ikon": "oyunlar/clicker/ikon.png",
-        "baglanti": "oyunlar/clicker/index.html"
     },
     {
         "id": "longcat",
