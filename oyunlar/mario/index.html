@@ -1,1 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <title>Super Mario Bros - Web Edition</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
 
+        <div id="ui-overlay">
+            <div id="score-display">SCORE: <span id="score">000000</span></div>
+            <div id="coins-display">COINS: <span id="coins">00</span></div>
+            <div id="world-display">WORLD: <span id="world">1-1</span></div>
+            <div id="time-display">TIME: <span id="time">400</span></div>
+            <div id="lives-display">LIVES: <span id="lives">3</span></div>
+        </div>
+
+        <!-- Mobil Kontroller -->
+        <div id="mobile-controls" class="hidden">
+            <div id="dpad">
+                <div id="btn-up" class="dpad-btn">▲</div>
+                <div id="btn-left" class="dpad-btn">◀</div>
+                <div id="btn-right" class="dpad-btn">▶</div>
+                <div id="btn-down" class="dpad-btn">▼</div>
+            </div>
+            <div id="action-buttons">
+                <div id="btn-run" class="action-btn">B</div>
+                <div id="btn-jump" class="action-btn">A</div>
+            </div>
+            <div id="mobile-pause-btn" class="mobile-pause">⏸</div>
+        </div>
+
+        <div id="start-screen" class="screen">
+            <div class="title">SUPER MARIO BROS</div>
+            <div class="subtitle">WEB EDITION</div>
+            <div class="instructions desktop-only">
+                <p>← → HAREKET</p>
+                <p>↑ Zıplama / Boru Girişi</p>
+                <p>Z Koşma / Ateş</p>
+                <p>P Duraklat</p>
+            </div>
+            <div class="instructions mobile-only">
+                <p>Ekran Kontrolleri ile Oyna</p>
+                <p>◀ ▶ Hareket</p>
+                <p>A Zıplama</p>
+                <p>B Koşma</p>
+            </div>
+            <div class="press-start">BAŞLAMAK İÇİN DOKUN VEYA ENTER</div>
+            <div class="device-info" id="device-info"></div>
+        </div>
+
+        <div id="pause-screen" class="screen hidden">
+            <div class="title">DURAKLATILDI</div>
+            <div class="press-start">DEVAM ETMEK İÇİN DOKUN VEYA P</div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <div class="title">OYUN BİTTİ</div>
+            <div class="press-start">TEKRAR BAŞLAMAK İÇİN DOKUN</div>
+        </div>
+
+        <div id="level-complete-screen" class="screen hidden">
+            <div class="title">SEVİYE TAMAMLANDI!</div>
+            <div class="press-start">DEVAM ETMEK İÇİN DOKUN</div>
+        </div>
+    </div>
+
+    <script src="src/constants.js"></script>
+    <script src="src/utils.js"></script>
+    <script src="src/sprite_manager.js"></script>
+    <script src="src/physics.js"></script>
+    <script src="src/entities/mario.js"></script>
+    <script src="src/entities/enemy.js"></script>
+    <script src="src/entities/item.js"></script>
+    <script src="src/entities/particle.js"></script>
+    <script src="src/level.js"></script>
+    <script src="src/camera.js"></script>
+    <script src="src/input.js"></script>
+    <script src="src/audio.js"></script>
+    <script src="src/game.js"></script>
+    <script src="src/main.js"></script>
+</body>
+</html>
