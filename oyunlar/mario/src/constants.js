@@ -1,7 +1,13 @@
-// Oyun Sabitleri
+// Oyun Sabitleri - Mobil + Masaüstü
+
+// Canvas boyutları (mantıksal)
+const LOGICAL_WIDTH = 800;
+const LOGICAL_HEIGHT = 600;
+
+// Tile boyutu
 const TILE_SIZE = 32;
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
+
+// Fizik sabitleri
 const GRAVITY = 0.6;
 const MAX_FALL_SPEED = 12;
 const FRICTION = 0.85;
@@ -9,6 +15,16 @@ const ACCELERATION = 0.5;
 const MAX_SPEED = 5;
 const JUMP_FORCE = -12;
 const BOUNCE_FORCE = -8;
+
+// Mobil ayarları
+const MOBILE = {
+    ACCELERATION: 0.7,      // Mobilde daha hızlı ivme
+    MAX_SPEED: 4.5,         // Mobilde biraz daha yavaş max hız
+    JUMP_FORCE: -11,        // Mobilde biraz daha düşük zıplama
+    VIRTUAL_DPAD_SIZE: 150,
+    VIRTUAL_BUTTON_SIZE: 70,
+    TOUCH_DEADZONE: 10
+};
 
 // Oyun Durumları
 const GAME_STATE = {
@@ -108,3 +124,32 @@ const COLORS = {
 // Harita boyutları
 const MAP_WIDTH = 200;
 const MAP_HEIGHT = 20;
+
+// Ekran boyutları (dinamik olarak ayarlanacak)
+let CANVAS_WIDTH = LOGICAL_WIDTH;
+let CANVAS_HEIGHT = LOGICAL_HEIGHT;
+
+// Scale faktörü (retina ekranlar için)
+let SCALE = 1;
+
+// Cihaz tespiti
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        || (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+}
+
+// Mobil ayarlarını al
+function getMobileSettings() {
+    if (isMobileDevice()) {
+        return {
+            acceleration: MOBILE.ACCELERATION,
+            maxSpeed: MOBILE.MAX_SPEED,
+            jumpForce: MOBILE.JUMP_FORCE
+        };
+    }
+    return {
+        acceleration: ACCELERATION,
+        maxSpeed: MAX_SPEED,
+        jumpForce: JUMP_FORCE
+    };
+}

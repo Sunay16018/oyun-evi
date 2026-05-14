@@ -1,4 +1,4 @@
-// Ana Oyun Motoru
+// Ana Oyun Motoru - Mobil + Masaüstü
 
 class Game {
     constructor() {
@@ -43,16 +43,76 @@ class Game {
             levelComplete: document.getElementById('level-complete-screen')
         };
 
+        this.isMobile = false;
+        this.canvasScale = 1;
+
         this.init();
     }
 
     init() {
+        this.isMobile = this.input.isMobile;
         spriteManager.init();
         this.audio.init();
+        this.setupCanvas();
         this.level.loadLevel(1);
-        this.camera.setBounds(0, this.level.width * TILE_SIZE - CANVAS_WIDTH);
+        this.camera.setBounds(0, this.level.width * TILE_SIZE - LOGICAL_WIDTH);
 
         requestAnimationFrame((t) => this.gameLoop(t));
+    }
+
+    setupCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = LOGICAL_WIDTH * dpr;
+        this.canvas.height = LOGICAL_HEIGHT * dpr;
+        this.ctx.scale(dpr, dpr);
+
+        // Canvas boyutlandırma
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+    }
+
+    resizeCanvas() {
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        const gameAspect = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+        const containerAspect = containerWidth / containerHeight;
+
+        let canvasWidth, canvasHeight;
+
+        if (containerAspect > gameAspect) {
+            canvasHeight = containerHeight;
+            canvasWidth = canvasHeight * gameAspect;
+        } else {
+            canvasWidth = containerWidth;
+            canvasHeight = canvasWidth / gameAspect;
+        }
+
+        this.canvas.style.width = canvasWidth + 'px';
+        this.canvas.style.height = canvasHeight + 'px';
+
+        this.canvasScale = Math.min(canvasWidth / LOGICAL_WIDTH, canvasHeight / LOGICAL_HEIGHT);
+
+        // Mobil kontrolleri pozisyonlandır
+        if (this.isMobile) {
+            this.adjustMobileControls();
+        }
+    }
+
+    adjustMobileControls() {
+        const mobileControls = document.getElementById('mobile-controls');
+        if (!mobileControls) return;
+
+        const canvasHeight = parseInt(this.canvas.style.height);
+        const containerHeight = document.getElementById('game-container').clientHeight;
+        const bottomSpace = containerHeight - canvasHeight;
+
+        if (bottomSpace > 100) {
+            mobileControls.style.height = bottomSpace + 'px';
+        }
     }
 
     gameLoop(timestamp) {
@@ -95,19 +155,17 @@ class Game {
     }
 
     updateStartScreen() {
-        if (this.input.startPressed) {
+        if (this.input.startPressed || this.input.jumpPressed) {
             this.startGame();
         }
     }
 
     updatePlaying(dt) {
-        // Duraklatma
         if (this.input.pausePressed) {
             this.pauseGame();
             return;
         }
 
-        // Zaman sayacı
         this.timeTimer += dt;
         if (this.timeTimer > 60) {
             this.timeTimer = 0;
@@ -117,22 +175,16 @@ class Game {
             }
         }
 
-        // Mario güncelle
         this.mario.update(this.input, this.level.data, dt);
-
-        // Kamera güncelle
         this.camera.update(this.mario, this.level.width * TILE_SIZE);
 
-        // Düşmanları güncelle
         this.level.enemies.forEach(enemy => {
             enemy.update(this.level.data, dt);
 
-            // Mario ile çarpışma
             if (enemy.active && !enemy.dead) {
                 this.checkEnemyCollision(enemy);
             }
 
-            // Ateş topu ile çarpışma
             this.mario.fireballs.forEach(fb => {
                 if (fb.active && enemy.active && !enemy.dead) {
                     if (rectIntersect(fb, enemy.getHitbox())) {
@@ -143,7 +195,6 @@ class Game {
                 }
             });
 
-            // Kabuk ile çarpışma
             if (enemy.type === ENEMY_TYPE.KOOPA_SHELL && enemy.shellMoving) {
                 this.level.enemies.forEach(other => {
                     if (other !== enemy && other.active && !other.dead) {
@@ -156,11 +207,9 @@ class Game {
             }
         });
 
-        // Eşyaları güncelle
         this.level.items.forEach(item => {
             item.update(this.level.data, dt);
 
-            // Mario ile çarpışma
             if (item.active && !item.collected) {
                 if (rectIntersect(this.mario.getHitbox(), item.getHitbox())) {
                     item.collect(this.mario);
@@ -168,24 +217,16 @@ class Game {
             }
         });
 
-        // Parçacıkları güncelle
         this.particles.update(dt);
-
-        // Blok sallanmalarını güncelle
         this.updateBlockBumps(dt);
-
-        // Coin zıplamalarını güncelle
         this.updateCoinBounces(dt);
 
-        // Ölüm kontrolü
         if (this.mario.dead && this.mario.deadTimer > 120) {
             this.handleDeath();
         }
 
-        // Bayrak kontrolü
         this.checkFlagCollision();
 
-        // Yıldız gücü trail efekti
         if (this.mario.starPower && Math.random() < 0.3) {
             this.particles.createStarTrail(
                 this.mario.x + Math.random() * this.mario.width,
@@ -195,19 +236,19 @@ class Game {
     }
 
     updatePaused() {
-        if (this.input.pausePressed) {
+        if (this.input.pausePressed || this.input.startPressed) {
             this.resumeGame();
         }
     }
 
     updateGameOver() {
-        if (this.input.startPressed) {
+        if (this.input.startPressed || this.input.jumpPressed) {
             this.restartGame();
         }
     }
 
     updateLevelComplete() {
-        if (this.input.startPressed) {
+        if (this.input.startPressed || this.input.jumpPressed) {
             this.nextLevel();
         }
     }
@@ -218,23 +259,19 @@ class Game {
 
         if (!rectIntersect(marioBox, enemyBox)) return;
 
-        // Yıldız gücü aktifse
         if (this.mario.starPower) {
             enemy.kill();
             this.particles.createFireExplosion(enemy.x + 16, enemy.y + 16);
             return;
         }
 
-        // Dokunulmazlık
         if (this.mario.invincible) return;
 
-        // Üstten ezme
         if (this.mario.velocityY > 0 && marioBox.y + marioBox.height < enemyBox.y + enemyBox.height / 2) {
             enemy.stomp();
             this.mario.velocityY = BOUNCE_FORCE;
             this.particles.createDust(enemy.x + 16, enemy.y);
         } else {
-            // Hasar alma
             this.mario.shrink();
             if (this.mario.dead) {
                 this.particles.createFireExplosion(this.mario.x + 16, this.mario.y + 16);
@@ -277,19 +314,16 @@ class Game {
     }
 
     draw() {
-        // Arkaplan
         this.ctx.fillStyle = COLORS.SKY;
-        this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 
         if (this.state === GAME_STATE.START) {
             this.drawStartScreen();
             return;
         }
 
-        // Seviye
         this.level.draw(this.ctx, this.camera.x);
 
-        // Blok sallanmaları
         this.blockBumps.forEach(bump => {
             const sprite = spriteManager.get(bump.type === BLOCK_TYPE.BRICK ? 'brick' : 'question');
             if (sprite) {
@@ -297,7 +331,6 @@ class Game {
             }
         });
 
-        // Coin zıplamaları
         this.coinBounces.forEach(coin => {
             this.ctx.globalAlpha = coin.opacity;
             const sprite = spriteManager.get('coin');
@@ -307,31 +340,20 @@ class Game {
             this.ctx.globalAlpha = 1;
         });
 
-        // Eşyalar
         this.level.items.forEach(item => item.draw(this.ctx, this.camera.x));
-
-        // Düşmanlar
         this.level.enemies.forEach(enemy => enemy.draw(this.ctx, this.camera.x));
-
-        // Mario
         this.mario.draw(this.ctx, this.camera.x);
-
-        // Parçacıklar
         this.particles.draw(this.ctx, this.camera.x);
 
-        // Duraklatma ekranı
         if (this.state === GAME_STATE.PAUSED) {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            this.ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
         }
     }
 
     drawStartScreen() {
-        // Başlangıç ekranı arka planı
         this.ctx.fillStyle = '#000';
-        this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        // Demo seviye çiz
+        this.ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
         this.level.draw(this.ctx, 0);
     }
 
@@ -438,7 +460,6 @@ class Game {
             type: blockType
         });
 
-        // Coin çıkarsa
         if (blockType === BLOCK_TYPE.QUESTION) {
             this.coinBounces.push({
                 x: x,
