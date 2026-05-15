@@ -1,6 +1,24 @@
-// Giriş Noktası - Mobil + Masaüstü
+// Giriş Noktası - Mobil + Masaüstü (Düzeltilmiş)
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Tüm sayfa için metin seçimini engelle
+    document.addEventListener('selectstart', (e) => {
+        e.preventDefault();
+        return false;
+    });
+
+    // Context menu engelle (sağ tık menüsü)
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+
+    // Drag engelle
+    document.addEventListener('dragstart', (e) => {
+        e.preventDefault();
+        return false;
+    });
+
     // Mobil cihazlarda dokunmatik olayları optimize et
     if ('ontouchstart' in window) {
         document.body.classList.add('touch-device');
@@ -9,18 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Oyunu başlat
     game = new Game();
 
-    // Tam ekran desteği
-    const gameContainer = document.getElementById('game-container');
-
     // iOS için standalone mod kontrolü
     if (window.navigator.standalone) {
         document.body.classList.add('standalone');
-    }
-
-    // Android için PWA desteği
-    if ('serviceWorker' in navigator) {
-        // Service worker kaydı (opsiyonel)
-        // navigator.serviceWorker.register('sw.js');
     }
 
     // Ekran döndürme kontrolü

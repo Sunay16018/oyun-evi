@@ -1,4 +1,4 @@
-// Girdi Sistemi - Mobil + Masaüstü
+// Girdi Sistemi - Mobil + Masaüstü (Otomatik Başlatma)
 
 class Input {
     constructor() {
@@ -28,11 +28,9 @@ class Input {
     }
 
     detectDevice() {
-        // Mobil cihaz tespiti
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
             || (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
 
-        // Mobil kontrolleri göster/gizle
         const mobileControls = document.getElementById('mobile-controls');
         const deviceInfo = document.getElementById('device-info');
 
@@ -44,7 +42,6 @@ class Input {
             deviceInfo.textContent = this.isMobile ? '📱 Mobil Cihaz Algılandı' : '🖥️ Masaüstü Modu';
         }
 
-        // Canvas boyutlandırma
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
         window.addEventListener('orientationchange', () => {
@@ -61,37 +58,30 @@ class Input {
         const containerWidth = container.clientWidth;
         const containerHeight = container.clientHeight;
 
-        // Oyun oranı: 4:3 (800x600)
-        const gameAspect = 800 / 600;
+        const gameAspect = LOGICAL_WIDTH / LOGICAL_HEIGHT;
         const containerAspect = containerWidth / containerHeight;
 
         let canvasWidth, canvasHeight;
 
         if (containerAspect > gameAspect) {
-            // Container daha geniş - yüksekliğe göre ayarla
             canvasHeight = containerHeight;
             canvasWidth = canvasHeight * gameAspect;
         } else {
-            // Container daha dar - genişliğe göre ayarla
             canvasWidth = containerWidth;
             canvasHeight = canvasWidth / gameAspect;
         }
 
-        // Canvas çözünürlüğünü ayarla (retina ekranlar için)
         const dpr = window.devicePixelRatio || 1;
-        canvas.width = 800 * dpr;
-        canvas.height = 600 * dpr;
+        canvas.width = LOGICAL_WIDTH * dpr;
+        canvas.height = LOGICAL_HEIGHT * dpr;
 
-        // CSS boyutları
         canvas.style.width = canvasWidth + 'px';
         canvas.style.height = canvasHeight + 'px';
 
-        // Context scale
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
 
-        // Global scale factor
-        window.GAME_SCALE = Math.min(canvasWidth / 800, canvasHeight / 600);
+        window.GAME_SCALE = Math.min(canvasWidth / LOGICAL_WIDTH, canvasHeight / LOGICAL_HEIGHT);
     }
 
     setupEventListeners() {
@@ -112,19 +102,6 @@ class Input {
 
         // Dokunmatik olaylar (Mobil)
         this.setupTouchControls();
-
-        // Mouse / Touch başlatma
-        document.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.screen') && !e.target.closest('.dpad-btn') && !e.target.closest('.action-btn')) {
-                this.startPressed = true;
-            }
-        }, { passive: true });
-
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.screen') && !e.target.closest('.dpad-btn') && !e.target.closest('.action-btn')) {
-                this.startPressed = true;
-            }
-        });
     }
 
     setupTouchControls() {
@@ -226,7 +203,7 @@ class Input {
             });
         }
 
-        // Swipe kontrolleri (ekran kaydırma)
+        // Swipe kontrolleri
         let touchStartX = 0;
         let touchStartY = 0;
         let touchStartTime = 0;
@@ -248,14 +225,12 @@ class Input {
             const dy = touch.clientY - touchStartY;
             const dt = Date.now() - touchStartTime;
 
-            // Hızlı swipe = zıplama
             if (Math.abs(dy) > 50 && dy < 0 && dt < 300) {
                 this.jump = true;
                 this.jumpPressed = true;
                 setTimeout(() => { this.jump = false; }, 100);
             }
 
-            // Yatay swipe = hareket
             if (Math.abs(dx) > 30) {
                 if (dx > 0) {
                     this.right = true;

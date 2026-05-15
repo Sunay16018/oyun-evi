@@ -1,4 +1,4 @@
-// Ana Oyun Motoru - Mobil + Masaüstü
+// Ana Oyun Motoru - Mobil + Masaüstü (Otomatik Başlatma)
 
 class Game {
     constructor() {
@@ -57,7 +57,25 @@ class Game {
         this.level.loadLevel(1);
         this.camera.setBounds(0, this.level.width * TILE_SIZE - LOGICAL_WIDTH);
 
+        // Otomatik başlatma - 3 saniye bekle
+        setTimeout(() => {
+            this.autoStart();
+        }, 3000);
+
         requestAnimationFrame((t) => this.gameLoop(t));
+    }
+
+    autoStart() {
+        // Başlangıç ekranını gizle ve oyunu başlat
+        this.screens.start.classList.add('hidden');
+        this.state = GAME_STATE.PLAYING;
+        this.audio.init();
+
+        // Mobil kontrolleri göster
+        const mobileControls = document.getElementById('mobile-controls');
+        if (this.isMobile && mobileControls) {
+            mobileControls.classList.remove('hidden');
+        }
     }
 
     setupCanvas() {
@@ -66,7 +84,6 @@ class Game {
         this.canvas.height = LOGICAL_HEIGHT * dpr;
         this.ctx.scale(dpr, dpr);
 
-        // Canvas boyutlandırma
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
     }
@@ -96,7 +113,6 @@ class Game {
 
         this.canvasScale = Math.min(canvasWidth / LOGICAL_WIDTH, canvasHeight / LOGICAL_HEIGHT);
 
-        // Mobil kontrolleri pozisyonlandır
         if (this.isMobile) {
             this.adjustMobileControls();
         }
@@ -155,7 +171,10 @@ class Game {
     }
 
     updateStartScreen() {
-        if (this.input.startPressed || this.input.jumpPressed) {
+        // Başlangıç ekranında animasyon veya demo oynat
+        // Kullanıcı herhangi bir tuşa basarsa hemen başlat
+        if (this.input.startPressed || this.input.jumpPressed || 
+            this.input.left || this.input.right || this.input.up || this.input.down) {
             this.startGame();
         }
     }
@@ -236,18 +255,20 @@ class Game {
     }
 
     updatePaused() {
-        if (this.input.pausePressed || this.input.startPressed) {
+        if (this.input.pausePressed || this.input.startPressed || this.input.jumpPressed) {
             this.resumeGame();
         }
     }
 
     updateGameOver() {
+        // 3 saniye sonra otomatik yeniden başlat
         if (this.input.startPressed || this.input.jumpPressed) {
             this.restartGame();
         }
     }
 
     updateLevelComplete() {
+        // 3 saniye sonra otomatik sonraki seviye
         if (this.input.startPressed || this.input.jumpPressed) {
             this.nextLevel();
         }
@@ -361,6 +382,11 @@ class Game {
         this.state = GAME_STATE.PLAYING;
         this.screens.start.classList.add('hidden');
         this.audio.init();
+
+        const mobileControls = document.getElementById('mobile-controls');
+        if (this.isMobile && mobileControls) {
+            mobileControls.classList.remove('hidden');
+        }
     }
 
     pauseGame() {
@@ -377,6 +403,13 @@ class Game {
         this.state = GAME_STATE.LEVEL_COMPLETE;
         this.screens.levelComplete.classList.remove('hidden');
         this.audio.playSound('powerup');
+
+        // 5 saniye sonra otomatik sonraki seviye
+        setTimeout(() => {
+            if (this.state === GAME_STATE.LEVEL_COMPLETE) {
+                this.nextLevel();
+            }
+        }, 5000);
     }
 
     nextLevel() {
@@ -403,6 +436,13 @@ class Game {
     gameOver() {
         this.state = GAME_STATE.GAME_OVER;
         this.screens.gameOver.classList.remove('hidden');
+
+        // 5 saniye sonra otomatik yeniden başlat
+        setTimeout(() => {
+            if (this.state === GAME_STATE.GAME_OVER) {
+                this.restartGame();
+            }
+        }, 5000);
     }
 
     restartGame() {
