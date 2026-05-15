@@ -9,11 +9,11 @@
     <title>Super Mario Bros - Web Edition</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+<body onselectstart="return false;">
+    <div id="game-container" onselectstart="return false;">
+        <canvas id="gameCanvas" onselectstart="return false;"></canvas>
 
-        <div id="ui-overlay">
+        <div id="ui-overlay" onselectstart="return false;">
             <div id="score-display">SCORE: <span id="score">000000</span></div>
             <div id="coins-display">COINS: <span id="coins">00</span></div>
             <div id="world-display">WORLD: <span id="world">1-1</span></div>
@@ -22,52 +22,52 @@
         </div>
 
         <!-- Mobil Kontroller -->
-        <div id="mobile-controls" class="hidden">
+        <div id="mobile-controls" class="hidden" onselectstart="return false;">
             <div id="dpad">
-                <div id="btn-up" class="dpad-btn">▲</div>
-                <div id="btn-left" class="dpad-btn">◀</div>
-                <div id="btn-right" class="dpad-btn">▶</div>
-                <div id="btn-down" class="dpad-btn">▼</div>
+                <div id="btn-up" class="dpad-btn" onselectstart="return false;">▲</div>
+                <div id="btn-left" class="dpad-btn" onselectstart="return false;">◀</div>
+                <div id="btn-right" class="dpad-btn" onselectstart="return false;">▶</div>
+                <div id="btn-down" class="dpad-btn" onselectstart="return false;">▼</div>
             </div>
             <div id="action-buttons">
-                <div id="btn-run" class="action-btn">B</div>
-                <div id="btn-jump" class="action-btn">A</div>
+                <div id="btn-run" class="action-btn" onselectstart="return false;">B</div>
+                <div id="btn-jump" class="action-btn" onselectstart="return false;">A</div>
             </div>
-            <div id="mobile-pause-btn" class="mobile-pause">⏸</div>
+            <div id="mobile-pause-btn" class="mobile-pause" onselectstart="return false;">⏸</div>
         </div>
 
-        <div id="start-screen" class="screen">
-            <div class="title">SUPER MARIO BROS</div>
-            <div class="subtitle">WEB EDITION</div>
-            <div class="instructions desktop-only">
+        <div id="start-screen" class="screen" onselectstart="return false;">
+            <div class="title" onselectstart="return false;">SUPER MARIO BROS</div>
+            <div class="subtitle" onselectstart="return false;">WEB EDITION</div>
+            <div class="instructions desktop-only" onselectstart="return false;">
                 <p>← → HAREKET</p>
                 <p>↑ Zıplama / Boru Girişi</p>
                 <p>Z Koşma / Ateş</p>
                 <p>P Duraklat</p>
             </div>
-            <div class="instructions mobile-only">
+            <div class="instructions mobile-only" onselectstart="return false;">
                 <p>Ekran Kontrolleri ile Oyna</p>
                 <p>◀ ▶ Hareket</p>
                 <p>A Zıplama</p>
                 <p>B Koşma</p>
             </div>
-            <div class="press-start">BAŞLAMAK İÇİN DOKUN VEYA ENTER</div>
-            <div class="device-info" id="device-info"></div>
+            <div class="press-start" onselectstart="return false;">BAŞLAMAK İÇİN DOKUN VEYA ENTER</div>
+            <div class="device-info" id="device-info" onselectstart="return false;"></div>
         </div>
 
-        <div id="pause-screen" class="screen hidden">
-            <div class="title">DURAKLATILDI</div>
-            <div class="press-start">DEVAM ETMEK İÇİN DOKUN VEYA P</div>
+        <div id="pause-screen" class="screen hidden" onselectstart="return false;">
+            <div class="title" onselectstart="return false;">DURAKLATILDI</div>
+            <div class="press-start" onselectstart="return false;">DEVAM ETMEK İÇİN DOKUN VEYA P</div>
         </div>
 
-        <div id="game-over-screen" class="screen hidden">
-            <div class="title">OYUN BİTTİ</div>
-            <div class="press-start">TEKRAR BAŞLAMAK İÇİN DOKUN</div>
+        <div id="game-over-screen" class="screen hidden" onselectstart="return false;">
+            <div class="title" onselectstart="return false;">OYUN BİTTİ</div>
+            <div class="press-start" onselectstart="return false;">TEKRAR BAŞLAMAK İÇİN DOKUN</div>
         </div>
 
-        <div id="level-complete-screen" class="screen hidden">
-            <div class="title">SEVİYE TAMAMLANDI!</div>
-            <div class="press-start">DEVAM ETMEK İÇİN DOKUN</div>
+        <div id="level-complete-screen" class="screen hidden" onselectstart="return false;">
+            <div class="title" onselectstart="return false;">SEVİYE TAMAMLANDI!</div>
+            <div class="press-start" onselectstart="return false;">DEVAM ETMEK İÇİN DOKUN</div>
         </div>
     </div>
 
