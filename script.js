@@ -1,7 +1,6 @@
 /* ============================================
    OYUN EVİ - Ana Sayfa JavaScript
-   Dinamik Oyun Kartları + Geri Dön Butonu + Reklamlar
-   Reklamlar: Popunder + Social Bar
+   Dinamik Oyun Kartları + Geri Dön Butonu
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,71 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         oyunlariYukle();
     }
     geriDonButonuEkle();
-    reklamlariYukle();
 });
-
-/* ============================================
-   REKLAM SİSTEMİ
-   Popunder + Social Bar + Sekme Takibi
-   ============================================ */
-let reklamGosterildi = false;
-let socialBarYuklendi = false;
-
-function socialBarYukle() {
-    if (socialBarYuklendi) return;
-    
-    const script = document.createElement('script');
-    script.src = 'https://turnstilesocially.com/e0/97/9f/e0979f70a004fd46d7f09203183d33ce.js';
-    script.async = true;
-    document.body.appendChild(script);
-    
-    socialBarYuklendi = true;
-    console.log('📢 Social Bar reklam yüklendi');
-}
-
-function popunderGoster() {
-    if (reklamGosterildi) return;
-    
-    const script = document.createElement('script');
-    script.src = 'https://turnstilesocially.com/a9/a8/db/a9a8db0ea77f7d9922b92573f62db3f8.js';
-    script.async = true;
-    document.body.appendChild(script);
-    
-    reklamGosterildi = true;
-    console.log('📢 Popunder reklam gösterildi');
-}
-
-function reklamlariYukle() {
-    // Social Bar hemen yüklensin (her zaman görünür)
-    setTimeout(function() {
-        socialBarYukle();
-    }, 500);
-    
-    // Popunder 1 saniye sonra
-    setTimeout(function() {
-        popunderGoster();
-    }, 1000);
-    
-    // Sekme değişiminde Popunder
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible') {
-            setTimeout(function() {
-                popunderGoster();
-            }, 500);
-        }
-    });
-    
-    // Tıklamalarda Popunder
-    document.addEventListener('click', function(e) {
-        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
-            e.target.closest('a') || e.target.closest('button') ||
-            e.target.closest('.game-card')) {
-            setTimeout(function() {
-                popunderGoster();
-            }, 300);
-        }
-    });
-}
 
 /* ============================================
    OYUN KARTLARI YÜKLEME
